@@ -21,7 +21,6 @@
 #include <Nodes/WhileNode.h>
 #include <Nodes/StringNode.h>
 #include <Nodes/ListNode.h>
-#include <Nodes/MapNode.h>
 #include <Nodes/ReturnNode.h>
 #include <Nodes/BreakNode.h>
 #include <Nodes/ContinueNode.h>

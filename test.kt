@@ -26,8 +26,6 @@ fun yay() {
     println("nay")
   }
 
-  3..6
-
   do {
     println("yo")
     val res = add(1, 2)

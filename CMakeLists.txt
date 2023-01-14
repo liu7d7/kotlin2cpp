@@ -14,7 +14,7 @@ set(
     include/Nodes/WhileNode.h src/WhileNode.cpp include/Nodes/StringNode.h src/StringNode.cpp include/Nodes/ListNode.h src/ListNode.cpp include/Nodes/ReturnNode.h
     src/ReturnNode.cpp include/Nodes/BreakNode.h include/Nodes/ContinueNode.h src/ContinueNode.cpp src/BreakNode.cpp include/Nodes/PackageNode.h
     src/PackageNode.cpp include/Nodes/ClassNode.h src/ClassNode.cpp include/Nodes/IndexNode.h src/IndexNode.cpp include/Nodes/ImportNode.h src/ImportNode.cpp
-    include/Nodes/MapNode.h src/MapNode.cpp include/Position.h  include/Global.h include/Nodes/VarDeclNode.h src/VarDeclNode.cpp include/Nodes/ArgNode.h src/ArgNode.cpp
+        include/Position.h  include/Global.h include/Nodes/VarDeclNode.h src/VarDeclNode.cpp include/Nodes/ArgNode.h src/ArgNode.cpp
     include/Nodes/DataclassNode.h src/DataclassNode.cpp include/Transpiler.h src/Transpiler.cpp include/Nodes/TypeNode.h src/TypeNode.cpp
 )
 

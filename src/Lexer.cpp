@@ -16,11 +16,26 @@ Token* Lexer::makeNumber() {
   string num;
   auto start = pos->copy();
   bool isDecimal = false;
+  bool reverse = false;
+  Position* firstDecimalPlace;
+  int firstDecimalIndex = 0;
   while (isdigit(currentChar) || (currentChar == '.')) {
     num += currentChar;
+    if (currentChar == '.') {
+      if (isDecimal) { // two decimal places in a number
+        reverse = true;
+        break;
+      }
+      firstDecimalPlace = pos->copy();
+      firstDecimalIndex = (int) num.length() - 1;
+      isDecimal = true;
+    }
     advance();
   }
-  if (currentChar == 'f') {
+  if (reverse) {
+    num = num.substr(0, firstDecimalIndex);
+    pos = firstDecimalPlace;
+  } else if (currentChar == 'f') {
     num += 'f';
     advance();
   }
