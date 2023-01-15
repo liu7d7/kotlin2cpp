@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/25/22.
 //
 
-#ifndef AT_UNARYOPNODE_H
-#define AT_UNARYOPNODE_H
+#ifndef KT2CPP_UNARYOPNODE_H
+#define KT2CPP_UNARYOPNODE_H
 
 #include <Nodes/Node.h>
 #include <Token.h>
@@ -18,4 +18,4 @@ public:
   string toString() const override;
 };
 
-#endif //AT_UNARYOPNODE_H
+#endif //KT2CPP_UNARYOPNODE_H

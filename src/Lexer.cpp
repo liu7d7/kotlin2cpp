@@ -48,14 +48,7 @@ Token* Lexer::makeString() {
   bool escape = false;
 
   while (currentChar != '\0' && (escape || currentChar != '"')) {
-    if (escape) {
-      str += escapeChars[currentChar];
-      escape = false;
-    } else {
-      if (currentChar == '\\') {
-        escape = true;
-      } else str += currentChar;
-    }
+    str += currentChar;
     advance();
   }
   advance();
@@ -65,7 +58,7 @@ Token* Lexer::makeString() {
 Token* Lexer::makeIdentifier() {
   string id;
   auto start = pos->copy();
-  while (isalpha(currentChar) || isdigit(currentChar) || currentChar == '_') {
+  while (isalpha(currentChar) || isdigit(currentChar) || currentChar == '_' || currentChar == '`') {
     id += currentChar;
     advance();
   }
@@ -117,6 +110,7 @@ Token* Lexer::makeArrow() {
     return new Token(DECREMENT, "--", start, pos->copy());
   }
   if (currentChar == '=') {
+    advance();
     return new Token(MINUS_EQ, "-=", start, pos->copy());
   }
   return new Token(MINUS, "", start, pos->copy());
@@ -129,6 +123,7 @@ Token* Lexer::makeDivide() {
     skipComment();
   }
   if (currentChar == '=') {
+    advance();
     return new Token(DIVIDE_EQ, "/=", start, pos->copy());
   }
   return new Token(DIVIDE, "/", start, pos->copy());
@@ -138,6 +133,7 @@ Token* Lexer::makeMultiply() {
   auto start = pos->copy();
   advance();
   if (currentChar == '=') {
+    advance();
     return new Token(MULTIPLY_EQ, "*=", start, pos->copy());
   }
   return new Token(MULTIPLY, "*", start, pos->copy());
@@ -147,6 +143,7 @@ Token* Lexer::makeModulo() {
   auto start = pos->copy();
   advance();
   if (currentChar == '=') {
+    advance();
     return new Token(MODULO_EQ, "%=", start, pos->copy());
   }
   return new Token(MODULO, "%", start, pos->copy());
@@ -160,6 +157,7 @@ Token* Lexer::makePlus() {
     return new Token(INCREMENT, "++", start, pos->copy());
   }
   if (currentChar == '=') {
+    advance();
     return new Token(PLUS_EQ, "+=", start, pos->copy());
   }
   return new Token(PLUS, "+", start, pos->copy());
@@ -172,7 +170,10 @@ Token* Lexer::makeQuestionMark() {
     advance();
     return new Token(NUL_TERNARY, "?:", start, pos->copy());
   }
-  return new Token(NUL_SAFE, "?", start, pos->copy());
+  if (currentChar == '.') {
+    advance();
+    return new Token(NUL_SAFE, "?.", start, pos->copy());
+  }
 }
 
 Token* Lexer::makeAnd() {
@@ -278,7 +279,7 @@ vector<Token*> Lexer::tokenize() {
     } else if (currentChar == '"') {
       advance();
       tokens.emplace_back(makeString());
-    } else if (isalpha(currentChar) || currentChar == '_') {
+    } else if (isalpha(currentChar) || currentChar == '_' || currentChar == '`') {
       tokens.emplace_back(makeIdentifier());
     } else {
       error = new Error(pos, pos, "Unexpected character", to_string(currentChar));
@@ -302,4 +303,23 @@ void Lexer::skipComment() {
   while (currentChar != '\n' && currentChar != '\0') {
     advance();
   }
+}
+
+Token* Lexer::parseInterpolatedString(const string& in) {
+  auto start = pos->copy();
+  string out;
+  for (int i = 0; i < in.length(); i++) {
+    if (in[i] == '$' && in[i + 1] == '{') {
+      i += 2;
+      string expr;
+      while (in[i] != '}') {
+        expr += in[i];
+        i++;
+      }
+      out += "${" + expr + "}";
+    } else {
+      out += in[i];
+    }
+  }
+  return new Token(STRING, out, start, pos->copy());
 }

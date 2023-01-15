@@ -7,7 +7,7 @@
 #include <Nodes/FuncDefNode.h>
 
 FuncDefNode::FuncDefNode(Token* nameTok, TypeNode* returnType, vector<Token*> generics, vector<ArgNode*> args, Node* body, bool autoReturn) : Node(N_FUNC_DEF) {
-  this->nameTok = nameTok;
+  this->idTok = nameTok;
   this->returnType = returnType;
   this->args = std::move(args);
   this->generics = std::move(generics);
@@ -26,7 +26,7 @@ FuncDefNode::FuncDefNode(Token* nameTok, TypeNode* returnType, vector<Token*> ge
 }
 
 string FuncDefNode::toString() const {
-  string str = "Function " + nameTok->value + "(";
+  string str = "Function " + idTok->value + "(";
   for (int i = 0; i < args.size(); i++) {
     str += args[i]->idTok->toString();
     if (i != args.size() - 1) {

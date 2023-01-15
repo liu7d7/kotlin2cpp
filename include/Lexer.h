@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/23/22.
 //
 
-#ifndef AT_LEXER_H
-#define AT_LEXER_H
+#ifndef KT2CPP_LEXER_H
+#define KT2CPP_LEXER_H
 
 #include <string>
 #include <vector>
@@ -19,28 +19,30 @@ private:
   char currentChar;
   Position* pos;
   unordered_map<string, TokenType> keywords = {
-    {"class",    CLASS},
-    {"data",     DATA},
-    {"in",       IN},
-    {"return",   RETURN},
-    {"continue", CONTINUE},
-    {"break",    BREAK},
-    {"package",  PACKAGE},
-    {"fun",      FUN},
-    {"as",       AS},
-    {"do",       DO},
-    {"for",      FOR},
-    {"while",    WHILE},
-    {"var",      VAR},
-    {"val",      VAR},
-    {"else",     ELSE},
-    {"if",       IF},
-    {"xor",      BIT_XOR},
-    {"and",      BIT_AND},
-    {"or",       BIT_OR},
-    {"import",   IMPORT},
-    {"step",     STEP},
-    {"downTo",   DOWNTO}
+    {"class",     CLASS},
+    {"data",      DATA},
+    {"in",        IN},
+    {"return",    RETURN},
+    {"continue",  CONTINUE},
+    {"break",     BREAK},
+    {"package",   PACKAGE},
+    {"fun",       FUN},
+    {"as",        AS},
+    {"do",        DO},
+    {"for",       FOR},
+    {"while",     WHILE},
+    {"var",       VAR},
+    {"val",       VAR},
+    {"else",      ELSE},
+    {"if",        IF},
+    {"xor",       BIT_XOR},
+    {"and",       BIT_AND},
+    {"or",        BIT_OR},
+    {"import",    IMPORT},
+    {"step",      STEP},
+    {"downTo",    DOWNTO},
+    {"until",     UNTIL},
+    {"typealias", TYPEALIAS}
   };
 
   unordered_map<char, char> escapeChars = {
@@ -81,6 +83,7 @@ public:
   Token* makeAnd();
   Token* makeDot();
   Token* makeNot();
+  Token* parseInterpolatedString(const string& in);
 };
 
-#endif //AT_LEXER_H
+#endif //KT2CPP_LEXER_H

@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/24/22.
 //
 
-#ifndef AT_POSITION_H
-#define AT_POSITION_H
+#ifndef KT2CPP_POSITION_H
+#define KT2CPP_POSITION_H
 
 #include <string>
 
@@ -23,4 +23,4 @@ public:
     string toString() const;
 };
 
-#endif //AT_POSITION_H
+#endif //KT2CPP_POSITION_H

@@ -13,7 +13,7 @@ ArgNode::ArgNode(Token* idTok, TypeNode* type, Node* value) : Node(N_ARG) {
   if (value) {
     this->posEnd = value->posEnd;
   } else {
-    this->posEnd = typeNode->posEnd;
+    this->posEnd = typeNode ? typeNode->posEnd : idTok->posEnd;
   }
 }
 
@@ -21,7 +21,5 @@ string ArgNode::toString() const {
   return idTok->toString() + ": " + typeNode->toString();
 }
 
-ArgNode::ArgNode() : Node(N_ARG) {
-
-}
+ArgNode::ArgNode() : Node(N_ARG), idTok(nullptr), typeNode(nullptr), defaultValue(nullptr) {}
 

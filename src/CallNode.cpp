@@ -4,9 +4,12 @@
 
 #include <Nodes/CallNode.h>
 
-CallNode::CallNode(Node* toCall, vector<Node*> args) : Node(N_CALL) {
+#include <utility>
+
+CallNode::CallNode(Node* toCall, vector<TypeNode*> generics, vector<Node*> args) : Node(N_CALL) {
   this->toCall = toCall;
   this->args = args;
+  this->generics = std::move(generics);
 
   posStart = toCall->posStart;
   if (!args.empty()) {

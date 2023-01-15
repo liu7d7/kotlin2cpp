@@ -2,21 +2,22 @@
 // Created by Aadi and Michael on 7/26/22.
 //
 
-#ifndef AT_FORNODE_H
-#define AT_FORNODE_H
+#ifndef KT2CPP_FORNODE_H
+#define KT2CPP_FORNODE_H
 
 #include <Nodes/Node.h>
 #include <Token.h>
+#include "ArgNode.h"
 
 class ForNode : public Node {
 public:
-  Token* varName;
-  Node* iterable, * body;
-  bool shouldReturn;
+  ArgNode* var;
+  Node* iterable;
+  Node* body;
 
-  ForNode(Token* varName, Node* iterable, Node* body, bool shouldReturn);
+  ForNode(ArgNode* var, Node* iterable, Node* body);
 
-  string toString() const override;
+  [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_FORNODE_H
+#endif //KT2CPP_FORNODE_H

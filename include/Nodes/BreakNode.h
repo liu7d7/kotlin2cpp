@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 8/1/22.
 //
 
-#ifndef AT_BREAKNODE_H
-#define AT_BREAKNODE_H
+#ifndef KT2CPP_BREAKNODE_H
+#define KT2CPP_BREAKNODE_H
 
 #include <Nodes/Node.h>
 #include "Global.h"
@@ -15,4 +15,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_BREAKNODE_H
+#endif //KT2CPP_BREAKNODE_H

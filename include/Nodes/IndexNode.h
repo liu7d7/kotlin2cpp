@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 8/13/22.
 //
 
-#ifndef AT_INDEXNODE_H
-#define AT_INDEXNODE_H
+#ifndef KT2CPP_INDEXNODE_H
+#define KT2CPP_INDEXNODE_H
 
 #include <Nodes/Node.h>
 #include "Global.h"
@@ -17,4 +17,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_INDEXNODE_H
+#endif //KT2CPP_INDEXNODE_H

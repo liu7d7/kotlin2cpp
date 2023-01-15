@@ -10,7 +10,8 @@ string NodeType_toString(NodeType in) {
     "N_VAR_ACCESS", "N_IF", "N_FOR", "N_FUNC_DEF", "N_CALL",
     "N_WHILE", "N_LIST", "N_RETURN", "N_BREAK", "N_CONTINUE",
     "N_PACKAGE", "N_CLASS", "N_IDX", "N_IMPORT", "N_MAP",
-    "N_VAR_DECL", "N_ARG", "N_DATACLASS", "N_TYPE", "N_DO_WHILE"
+    "N_VAR_DECL", "N_ARG", "N_DATACLASS", "N_TYPE", "N_DO_WHILE",
+    "N_TYPEALIAS", "N_LAMBDA"
   };
   return strs[in];
 }

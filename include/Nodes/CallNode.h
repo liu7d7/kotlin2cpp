@@ -2,21 +2,23 @@
 // Created by Aadi and Michael on 7/27/22.
 //
 
-#ifndef AT_CALLNODE_H
-#define AT_CALLNODE_H
+#ifndef KT2CPP_CALLNODE_H
+#define KT2CPP_CALLNODE_H
 
 #include <vector>
 #include <Token.h>
 #include <Nodes/Node.h>
+#include "TypeNode.h"
 
 class CallNode : public Node {
 public:
   Node* toCall;
   vector<Node*> args;
+  vector<TypeNode*> generics;
 
-  CallNode(Node* toCall, vector<Node*> args);
+  CallNode(Node* toCall, vector<TypeNode*> generics, vector<Node*> args);
 
-  string toString() const override;
+  [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_CALLNODE_H
+#endif //KT2CPP_CALLNODE_H

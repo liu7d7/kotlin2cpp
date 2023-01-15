@@ -5,6 +5,8 @@
 #include "Nodes/VarDeclNode.h"
 #include "Nodes/DataclassNode.h"
 #include "Transpiler.h"
+#include "clipboardxx.hpp"
+#include "Nodes/LambdaNode.h"
 
 [[nodiscard]] inline string getTabs(int nesting) {
     return string(nesting * 2, ' ');
@@ -39,10 +41,12 @@ void print(Node* in, int nesting = 0) {
       print(((VarAssignNode*) in)->value, nesting + 1);
       break;
     case N_VAR_ACCESS:
-      std::cout << ((VarAccessNode*) in)->idTok->value << std::endl;
+      if (((VarAccessNode*) in)->idTok)
+        std::cout << ((VarAccessNode*) in)->idTok->value << std::endl;
+      else cout << endl;
       break;
     case N_FUNC_DEF:
-      std::cout << ((FuncDefNode*) in)->nameTok->value << " ";
+      std::cout << ((FuncDefNode*) in)->idTok->value << " ";
       for (int i = 0; i < ((FuncDefNode*) in)->args.size(); i++) {
         std::cout << ((FuncDefNode*) in)->args[i]->idTok->value << ": " << ((FuncDefNode*) in)->args[i]->typeNode->toString();
         if (i != ((FuncDefNode*) in)->args.size() - 1) {
@@ -57,7 +61,7 @@ void print(Node* in, int nesting = 0) {
       print(((VarDeclNode*) in)->value, nesting + 1);
       break;
     case N_ARG:
-      std::cout << ((ArgNode*) in)->idTok->value << ": " << ((ArgNode*) in)->typeNode->toString() << std::endl;
+      std::cout << ((ArgNode*) in)->idTok->value << ": " << (((ArgNode*) in)->typeNode ? ((ArgNode*) in)->typeNode->toString() : "Any") << std::endl;
       break;
     case N_RETURN:
       std::cout << std::endl;
@@ -80,7 +84,7 @@ void print(Node* in, int nesting = 0) {
       std::cout << std::endl;
       break;
     case N_CLASS: // just like dataclass but with body
-      std::cout << ((ClassNode*) in)->nameTok->value << " ";
+      std::cout << ((ClassNode*) in)->idTok->value << " ";
       for (int i = 0; i < ((ClassNode*) in)->ctor.size(); i++) {
         std::cout << ((ClassNode*) in)->ctor[i]->idTok->value << ": " << ((ClassNode*) in)->ctor[i]->typeNode->toString();
         if (i != ((ClassNode*) in)->ctor.size() - 1) {
@@ -91,6 +95,13 @@ void print(Node* in, int nesting = 0) {
       if (((ClassNode*) in)->body != nullptr) {
         print(((ClassNode*) in)->body, nesting + 1);
       }
+      break;
+    case N_LAMBDA:
+      std::cout << std::endl;
+      for (auto& i : ((LambdaNode*) in)->args) {
+        print(i, nesting + 1);
+      }
+      print(((LambdaNode*) in)->body, nesting + 1);
       break;
     case N_IF:
       std::cout << std::endl;
@@ -104,9 +115,9 @@ void print(Node* in, int nesting = 0) {
       }
       break;
     case N_PACKAGE:
-      for (int i = 0; i < ((PackageNode*) in)->nameToks.size(); i++) {
-        std::cout << ((PackageNode*) in)->nameToks[i]->value;
-        if (i != ((PackageNode*) in)->nameToks.size() - 1) {
+      for (int i = 0; i < ((PackageNode*) in)->idToks.size(); i++) {
+        std::cout << ((PackageNode*) in)->idToks[i]->value;
+        if (i != ((PackageNode*) in)->idToks.size() - 1) {
           std::cout << ".";
         }
       }
@@ -123,6 +134,11 @@ void print(Node* in, int nesting = 0) {
       break;
     case N_TYPE:
       std::cout << ((TypeNode*) in)->toString() << std::endl;
+      break;
+    case N_FOR:
+      std::cout << ((ForNode*) in)->var->idTok->value << std::endl;
+      print(((ForNode*) in)->iterable, nesting + 1);
+      print(((ForNode*) in)->body, nesting + 1);
       break;
   }
 }
@@ -163,5 +179,16 @@ int main(int argc, char** argv) {
   cout << "Begin transpiled output:" << endl;
   cout << res;
   cout << "End transpiled output" << endl;
+
+  // save to file
+  srand(time(NULL));
+  string fName = "out" + to_string(rand()) + ".cpp";
+  ofstream out(fName);
+  out << res;
+  out.close();
+  cout << "Saved to " << fName << endl;
+  clipboardxx::clipboard c;
+  c << res;
+  cout << "And copied to clipboard" << endl;
   return 0;
 }

@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/27/22.
 //
 
-#ifndef AT_FUNCDEFNODE_H
-#define AT_FUNCDEFNODE_H
+#ifndef KT2CPP_FUNCDEFNODE_H
+#define KT2CPP_FUNCDEFNODE_H
 
 #include <vector>
 #include <Token.h>
@@ -12,7 +12,7 @@
 
 class FuncDefNode : public Node {
 public:
-  Token* nameTok;
+  Token* idTok;
   TypeNode* returnType;
   vector<ArgNode*> args;
   vector<Token*> generics;
@@ -24,4 +24,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_FUNCDEFNODE_H
+#endif //KT2CPP_FUNCDEFNODE_H

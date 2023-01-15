@@ -2,8 +2,8 @@
 // Created by richard may clarkson on 13/01/2023.
 //
 
-#ifndef AT_ARGNODE_H
-#define AT_ARGNODE_H
+#ifndef KT2CPP_ARGNODE_H
+#define KT2CPP_ARGNODE_H
 
 #include "Node.h"
 #include "Token.h"
@@ -22,4 +22,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_ARGNODE_H
+#endif //KT2CPP_ARGNODE_H

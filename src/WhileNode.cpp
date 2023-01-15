@@ -7,7 +7,6 @@
 WhileNode::WhileNode(Node* condition, Node* body, bool doWhile) : Node(doWhile ? N_DO_WHILE : N_WHILE) {
   this->condition = condition;
   this->body = body;
-  this->doWhile = doWhile;
 
   posStart = condition->posStart;
   posEnd = body->posEnd;

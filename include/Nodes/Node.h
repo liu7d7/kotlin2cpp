@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/24/22.
 //
 
-#ifndef AT_NODE_H
-#define AT_NODE_H
+#ifndef KT2CPP_NODE_H
+#define KT2CPP_NODE_H
 
 #include <Position.h>
 
@@ -32,7 +32,9 @@ enum NodeType {
   N_ARG,
   N_DATACLASS,
   N_TYPE,
-  N_DO_WHILE
+  N_DO_WHILE,
+  N_TYPEALIAS,
+  N_LAMBDA
 };
 
 [[nodiscard]] string NodeType_toString(NodeType in);
@@ -47,4 +49,4 @@ public:
   virtual string toString() const = 0;
 };
 
-#endif //AT_NODE_H
+#endif //KT2CPP_NODE_H

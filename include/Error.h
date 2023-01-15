@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/24/22.
 //
 
-#ifndef AT_ERROR_H
-#define AT_ERROR_H
+#ifndef KT2CPP_ERROR_H
+#define KT2CPP_ERROR_H
 
 #include <vector>
 #include <sstream>
@@ -24,4 +24,4 @@ public:
   [[nodiscard]] string addArrows(const string& text) const;
 };
 
-#endif //AT_ERROR_H
+#endif //KT2CPP_ERROR_H

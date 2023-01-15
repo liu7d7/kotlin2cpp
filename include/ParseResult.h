@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/25/22.
 //
 
-#ifndef AT_PARSERESULT_H
-#define AT_PARSERESULT_H
+#ifndef KT2CPP_PARSERESULT_H
+#define KT2CPP_PARSERESULT_H
 
 #include <Error.h>
 #include <Nodes/Node.h>
@@ -27,4 +27,4 @@ public:
   ParseResult* failure(Error* errorIn);
 };
 
-#endif //AT_PARSERESULT_H
+#endif //KT2CPP_PARSERESULT_H

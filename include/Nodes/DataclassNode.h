@@ -2,8 +2,8 @@
 // Created by richard may clarkson on 13/01/2023.
 //
 
-#ifndef AT_DATACLASSNODE_H
-#define AT_DATACLASSNODE_H
+#ifndef KT2CPP_DATACLASSNODE_H
+#define KT2CPP_DATACLASSNODE_H
 
 #include <vector>
 #include "Node.h"
@@ -21,4 +21,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_DATACLASSNODE_H
+#endif //KT2CPP_DATACLASSNODE_H

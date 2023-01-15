@@ -2,8 +2,8 @@
 // Created by richard may clarkson on 14/01/2023.
 //
 
-#ifndef AT_TYPENODE_H
-#define AT_TYPENODE_H
+#ifndef KT2CPP_TYPENODE_H
+#define KT2CPP_TYPENODE_H
 
 #include <vector>
 #include "Node.h"
@@ -11,12 +11,12 @@
 
 class TypeNode : public Node {
 public:
-  Token* typeTok;
-  vector<Token*> generics;
+  Token* idTok;
+  vector<TypeNode*> generics;
 
-  explicit TypeNode(Token* typeTok, vector<Token*> generics);
+  explicit TypeNode(Token* typeTok, vector<TypeNode*> generics);
 
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_TYPENODE_H
+#endif //KT2CPP_TYPENODE_H

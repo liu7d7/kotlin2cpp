@@ -1,47 +1,29 @@
-package e.f.g.h
+typealias list<T> = ArrayList<T>
 
-class a {
-
-}
-
-class b {
-  fun a() {
-    println("b")
+fun transformList(a: list<Int>): list<Int> {
+  val l = list<Int>()
+  for (i in a) {
+    l.add(i + 1)
   }
+  return l
 }
 
-data class lol<T>(a: T, b: lol)
-
-fun <T> add(a: T, b: T): list<T> {
-  val result: T = a + b
-  return listOf(result)
-}
-
-fun yay() {
-  if (true) {
-    println("yay")
-  } else if (true) {
-    println("maybe")
-  } else {
-    println("nay")
+fun printList(a: list<Int>) {
+  for (i in a) {
+    print(i)
+    print(" ")
   }
-
-  do {
-    println("yo")
-    val res = add(1, 2)
-    println(res)
-  } while (true)
-}
-
-fun add(a: String, b: String): String {
-  val result: String = a + b
-  if (result == "yay") {
-    result.yo = "nay"
-  }
-  return result
 }
 
 fun main() {
-  add(1, 2)
-  add("test", "ing")
+  val l = list<Int>()
+  l.add(3)
+  l.add(4)
+  l.add(2)
+  l.add(5)
+  transformList(l)
+  list<Int>().size
+  printList(list<Int>().also { it.add(3) })
+  print("\n")
+  printList(l.also { x: list<Int> -> x.add(3) })
 }

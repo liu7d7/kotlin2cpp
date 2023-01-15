@@ -11,16 +11,35 @@ VarAccessNode::VarAccessNode(Token* idTok, vector<Token*> members, Node* parent)
 
   if (parent != nullptr) {
     this->posStart = parent->posStart;
-    this->posEnd = members.back()->posEnd;
+    if (members.empty()) {
+      methodName = nullptr;
+      this->posEnd = parent->posEnd;
+    } else {
+      this->posEnd = members.back()->posEnd;
+      methodName = members.back();
+    }
   } else {
     this->posStart = idTok->posStart;
-    if (members.empty())
+    if (members.empty()) {
       this->posEnd = idTok->posEnd;
-    else
+      methodName = idTok;
+    } else {
       this->posEnd = members.back()->posEnd;
+      methodName = members.back();
+    }
   }
 }
 
 string VarAccessNode::toString() const {
-  return idTok->value;
+  string str;
+  if (parent != nullptr) {
+    str += parent->toString();
+  }
+  if (idTok != nullptr) {
+    str += idTok->toString();
+  }
+  for (auto& member : members) {
+    str += "." + member->toString();
+  }
+  return str;
 }

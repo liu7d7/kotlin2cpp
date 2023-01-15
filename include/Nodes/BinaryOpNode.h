@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/25/22.
 //
 
-#ifndef AT_BINARYOPNODE_H
-#define AT_BINARYOPNODE_H
+#ifndef KT2CPP_BINARYOPNODE_H
+#define KT2CPP_BINARYOPNODE_H
 
 #include <Nodes/Node.h>
 #include <Token.h>
@@ -18,4 +18,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_BINARYOPNODE_H
+#endif //KT2CPP_BINARYOPNODE_H

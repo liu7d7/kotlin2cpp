@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/26/22.
 //
 
-#ifndef AT_IFNODE_H
-#define AT_IFNODE_H
+#ifndef KT2CPP_IFNODE_H
+#define KT2CPP_IFNODE_H
 
 #include <vector>
 #include <Nodes/Node.h>
@@ -18,4 +18,4 @@ public:
   string toString() const override;
 };
 
-#endif //AT_IFNODE_H
+#endif //KT2CPP_IFNODE_H

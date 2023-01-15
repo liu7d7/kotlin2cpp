@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/23/22.
 //
 
-#ifndef AT_TOKEN_H
-#define AT_TOKEN_H
+#ifndef KT2CPP_TOKEN_H
+#define KT2CPP_TOKEN_H
 
 #include <string>
 #include <Position.h>
@@ -77,7 +77,13 @@ enum TokenType {
   RANGE,
   DOWNTO,
   STEP,
-  UNTIL
+  UNTIL,
+  TYPEALIAS,
+  IS_BEGIN, // interpolated string
+  IS_END,
+  IS_TEXT,
+  IS_EXPR_BEGIN,
+  IS_EXPR_END,
 };
 
 [[nodiscard]] string TokenType_toString(TokenType type);
@@ -93,4 +99,4 @@ public:
   [[nodiscard]] string toString() const;
 };
 
-#endif //AT_TOKEN_H
+#endif //KT2CPP_TOKEN_H

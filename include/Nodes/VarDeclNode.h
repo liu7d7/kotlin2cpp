@@ -2,8 +2,8 @@
 // Created by richard may clarkson on 12/01/2023.
 //
 
-#ifndef AT_VARDECLNODE_H
-#define AT_VARDECLNODE_H
+#ifndef KT2CPP_VARDECLNODE_H
+#define KT2CPP_VARDECLNODE_H
 
 #include <vector>
 #include "Node.h"
@@ -24,4 +24,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_VARDECLNODE_H
+#endif //KT2CPP_VARDECLNODE_H

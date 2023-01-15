@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 8/2/22.
 //
 
-#ifndef AT_PACKAGENODE_H
-#define AT_PACKAGENODE_H
+#ifndef KT2CPP_PACKAGENODE_H
+#define KT2CPP_PACKAGENODE_H
 
 #include <Token.h>
 #include <vector>
@@ -12,7 +12,7 @@
 
 class PackageNode : public Node {
 public:
-  vector<Token*> nameToks;
+  vector<Token*> idToks;
   Node* body;
 
   PackageNode(vector<Token*> nameTok, Node* body);
@@ -20,4 +20,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_PACKAGENODE_H
+#endif //KT2CPP_PACKAGENODE_H

@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/25/22.
 //
 
-#ifndef AT_VARASSIGNNODE_H
-#define AT_VARASSIGNNODE_H
+#ifndef KT2CPP_VARASSIGNNODE_H
+#define KT2CPP_VARASSIGNNODE_H
 
 #include <vector>
 #include <Nodes/Node.h>
@@ -22,4 +22,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_VARASSIGNNODE_H
+#endif //KT2CPP_VARASSIGNNODE_H

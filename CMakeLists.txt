@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 project(kt2cpp)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 14)
 # Set flags for release mode
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
@@ -16,7 +16,7 @@ set(
     src/PackageNode.cpp include/Nodes/ClassNode.h src/ClassNode.cpp include/Nodes/IndexNode.h src/IndexNode.cpp include/Nodes/ImportNode.h src/ImportNode.cpp
         include/Position.h  include/Global.h include/Nodes/VarDeclNode.h src/VarDeclNode.cpp include/Nodes/ArgNode.h src/ArgNode.cpp
     include/Nodes/DataclassNode.h src/DataclassNode.cpp include/Transpiler.h src/Transpiler.cpp include/Nodes/TypeNode.h src/TypeNode.cpp
-)
+        include/Nodes/TypealiasNode.h src/TypealiasNode.cpp include/Nodes/LambdaNode.h src/LambdaNode.cpp)
 
 
 include_directories(include)

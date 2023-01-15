@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/25/22.
 //
 
-#ifndef AT_VARACCESSNODE_H
-#define AT_VARACCESSNODE_H
+#ifndef KT2CPP_VARACCESSNODE_H
+#define KT2CPP_VARACCESSNODE_H
 
 #include <vector>
 #include <Nodes/Node.h>
@@ -15,10 +15,11 @@ public:
   Token* idTok;
   vector<Token*> members;
   Node* parent;
+  Token* methodName;
 
   explicit VarAccessNode(Token* idTok, vector<Token*> members = {}, Node* parent = nullptr);
 
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_VARACCESSNODE_H
+#endif //KT2CPP_VARACCESSNODE_H

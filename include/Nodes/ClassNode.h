@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 8/3/22.
 //
 
-#ifndef AT_CLASSNODE_H
-#define AT_CLASSNODE_H
+#ifndef KT2CPP_CLASSNODE_H
+#define KT2CPP_CLASSNODE_H
 
 #include <Token.h>
 #include <Nodes/Node.h>
@@ -12,7 +12,7 @@
 
 class ClassNode : public Node {
 public:
-  Token* nameTok;
+  Token* idTok;
   vector<ArgNode*> ctor;
   vector<Token*> generics;
   Node* body;
@@ -23,4 +23,4 @@ public:
   [[nodiscard]] string toString() const override;
 };
 
-#endif //AT_CLASSNODE_H
+#endif //KT2CPP_CLASSNODE_H

@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/29/22.
 //
 
-#ifndef AT_STRINGNODE_H
-#define AT_STRINGNODE_H
+#ifndef KT2CPP_STRINGNODE_H
+#define KT2CPP_STRINGNODE_H
 
 #include <Token.h>
 #include <Nodes/Node.h>
@@ -17,4 +17,4 @@ public:
   string toString() const override;
 };
 
-#endif //AT_STRINGNODE_H
+#endif //KT2CPP_STRINGNODE_H

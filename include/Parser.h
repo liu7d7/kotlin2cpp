@@ -2,8 +2,8 @@
 // Created by Aadi and Michael on 7/24/22.
 //
 
-#ifndef AT_PARSER_H
-#define AT_PARSER_H
+#ifndef KT2CPP_PARSER_H
+#define KT2CPP_PARSER_H
 
 #include <unordered_set>
 #include <unordered_map>
@@ -28,6 +28,7 @@
 #include <Nodes/ClassNode.h>
 #include <Nodes/IndexNode.h>
 #include <Nodes/ImportNode.h>
+#include <stack>
 
 class Parser {
 public:
@@ -46,7 +47,8 @@ public:
   ParseResult* statements();
   ParseResult* statement();
   ParseResult* expr();
-  ParseResult* binOp(vector<TokenType> ops, ParseResult* (Parser::*funcA)(), ParseResult* (Parser::*funcB)());
+  ParseResult* binOp(unordered_set<TokenType> ops, ParseResult* (Parser::*funcA)(), ParseResult* (Parser::*funcB)());
+  ParseResult* assignExpr();
   ParseResult* compExpr();
   ParseResult* arithExpr();
   ParseResult* term();
@@ -54,11 +56,17 @@ public:
   ParseResult* factor();
   ParseResult* power();
   ParseResult* call();
+  ParseResult* suppliedCall(Node* in);
   ParseResult* atom();
   ParseResult* ifExpr();
   ParseResult* whileExpr();
+  ParseResult* argExpr(bool allowDefaultArgument, bool optionalType);
+  ParseResult* forExpr();
+  ParseResult* idExpr();
   ParseResult* doWhileExpr();
+  ParseResult* lambdaExpr();
   ParseResult* funcDef();
+  ParseResult* typealiasDef();
   ParseResult* packageDef();
   ParseResult* classDef();
   ParseResult* dataclassDef();
@@ -67,4 +75,4 @@ public:
   ParseResult* checkIndex(Node* n, ParseResult* res);
 };
 
-#endif //AT_PARSER_H
+#endif //KT2CPP_PARSER_H
