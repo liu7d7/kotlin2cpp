@@ -148,6 +148,8 @@ namespace e_f_g_h {
 ```
 </details>
 
+<br/>
+
 <h3>
 1/15/2023:
 </h3>
@@ -270,6 +272,9 @@ after translating, for example, `list.add(item)` gets translated into `__kt__::c
 tree shaking is also performed on the support functions so that the `__kt__` namespace doesn't get too crowded for basic programs.
 </p>
 </details>
+
+<br/>
+
 <h3>
 1/16/2023:
 </h3>
