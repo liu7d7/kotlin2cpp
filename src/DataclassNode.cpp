@@ -5,7 +5,7 @@
 
 #include "Nodes/DataclassNode.h"
 
-DataclassNode::DataclassNode(Token* idTok, vector<Token*> generics, vector<ArgNode*> args) : Node(N_DATACLASS) {
+DataclassNode::DataclassNode(Token* idTok, std::vector<Token*> generics, std::vector<ArgNode*> args) : Node(N_DATACLASS) {
   this->idTok = idTok;
   this->generics = std::move(generics);
   this->ctor = std::move(args);
@@ -14,7 +14,7 @@ DataclassNode::DataclassNode(Token* idTok, vector<Token*> generics, vector<ArgNo
   this->posEnd = this->ctor.back()->posEnd;
 }
 
-string DataclassNode::toString() const {
+std::string DataclassNode::toString() const {
   return "DataclassNode::toString not implemented";
 }
 

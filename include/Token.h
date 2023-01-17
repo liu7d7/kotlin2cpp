@@ -9,8 +9,6 @@
 #include <Position.h>
 #include "Global.h"
 
-using namespace std;
-
 enum TokenType {
   NUMBER,
   STRING,
@@ -81,22 +79,21 @@ enum TokenType {
   TYPEALIAS,
   IS_BEGIN, // interpolated string
   IS_END,
-  IS_TEXT,
   IS_EXPR_BEGIN,
   IS_EXPR_END,
 };
 
-[[nodiscard]] string TokenType_toString(TokenType type);
+[[nodiscard]] std::string TokenType_toString(TokenType type);
 
 class Token {
 public:
-  string value;
+  std::string value;
   TokenType type;
   Position* posStart, * posEnd;
 
-  Token(TokenType type, string value, Position* posStart = nullptr, Position* posEnd = nullptr);
+  Token(TokenType type, std::string value, Position* posStart = nullptr, Position* posEnd = nullptr);
 
-  [[nodiscard]] string toString() const;
+  [[nodiscard]] std::string toString() const;
 };
 
 #endif //KT2CPP_TOKEN_H

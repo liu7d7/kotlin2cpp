@@ -12,12 +12,12 @@
 
 class PackageNode : public Node {
 public:
-  vector<Token*> idToks;
+  std::vector<Token*> idToks;
   Node* body;
 
-  PackageNode(vector<Token*> nameTok, Node* body);
+  PackageNode(std::vector<Token*> nameTok, Node* body);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_PACKAGENODE_H

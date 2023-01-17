@@ -4,7 +4,7 @@
 
 #include <Position.h>
 
-Position::Position(int idx, int line, int col, string* fName, string* fText) {
+Position::Position(int idx, int line, int col, std::string* fName, std::string* fText) {
   this->line = line;
   this->col = col;
   this->idx = idx;
@@ -27,6 +27,6 @@ Position* Position::copy() {
   return new Position(idx, line, col, fName, fText);
 }
 
-string Position::toString() const {
-  return "Line " + to_string(line) + ", Column " + to_string(col);
+std::string Position::toString() const {
+  return "Line " + std::to_string(line) + ", Column " + std::to_string(col);
 }

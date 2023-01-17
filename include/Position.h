@@ -7,20 +7,18 @@
 
 #include <string>
 
-using namespace std;
-
 class Position {
 public:
     int line, col, idx;
-    string *fName, *fText;
+    std::string *fName, *fText;
 
-    Position(int idx, int line, int col, string *fName, string *fText);
+    Position(int idx, int line, int col, std::string *fName, std::string *fText);
 
     Position *advance(char c = '\0');
 
     Position *copy();
 
-    string toString() const;
+    [[nodiscard]] std::string toString() const;
 };
 
 #endif //KT2CPP_POSITION_H

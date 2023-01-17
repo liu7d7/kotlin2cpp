@@ -11,7 +11,7 @@ class ContinueNode : public Node {
 public:
   ContinueNode(Position* posStart, Position* posEnd);
 
-  string toString() const override;
+  std::string toString() const override;
 };
 
 #endif //KT2CPP_CONTINUENODE_H

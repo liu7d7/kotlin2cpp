@@ -15,7 +15,7 @@ public:
 
   TypealiasNode(TypeNode* from, TypeNode* to);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_TYPEALIASNODE_H

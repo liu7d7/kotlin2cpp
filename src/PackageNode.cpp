@@ -6,7 +6,7 @@
 #include <vector>
 #include <Nodes/PackageNode.h>
 
-PackageNode::PackageNode(vector<Token*> nameTok, Node* body) : Node(N_PACKAGE) {
+PackageNode::PackageNode(std::vector<Token*> nameTok, Node* body) : Node(N_PACKAGE) {
   this->idToks = std::move(nameTok);
   this->body = body;
 
@@ -14,6 +14,6 @@ PackageNode::PackageNode(vector<Token*> nameTok, Node* body) : Node(N_PACKAGE) {
   this->posEnd = this->body->posEnd;
 }
 
-string PackageNode::toString() const {
+std::string PackageNode::toString() const {
   return "<Package: " + idToks.front()->toString() + ">";
 }

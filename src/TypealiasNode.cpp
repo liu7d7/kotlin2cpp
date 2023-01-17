@@ -9,7 +9,7 @@ TypealiasNode::TypealiasNode(TypeNode* from, TypeNode* to) : Node(N_TYPEALIAS), 
   this->posEnd = to->posEnd;
 }
 
-string TypealiasNode::toString() const {
+std::string TypealiasNode::toString() const {
   return "TypealiasNode";
 }
 

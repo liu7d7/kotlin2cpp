@@ -4,7 +4,7 @@
 
 #include <Nodes/ClassNode.h>
 
-ClassNode::ClassNode(Token* type, vector<Token*> generics, vector<ArgNode*> ctor, Node* body, Node* super) : Node(N_CLASS) {
+ClassNode::ClassNode(Token* type, std::vector<Token*> generics, std::vector<ArgNode*> ctor, Node* body, Node* super) : Node(N_CLASS) {
   this->idTok = type;
   this->ctor = std::move(ctor);
   this->generics = std::move(generics);
@@ -15,6 +15,6 @@ ClassNode::ClassNode(Token* type, vector<Token*> generics, vector<ArgNode*> ctor
   this->posEnd = this->body ? this->body->posEnd : this->ctor.empty() ? this->idTok->posEnd : this->ctor.back()->posEnd;
 }
 
-string ClassNode::toString() const {
+std::string ClassNode::toString() const {
   return "type " + this->idTok->toString() + " = " + this->body->toString();
 }

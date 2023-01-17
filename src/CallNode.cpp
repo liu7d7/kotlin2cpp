@@ -6,7 +6,7 @@
 
 #include <utility>
 
-CallNode::CallNode(Node* toCall, vector<TypeNode*> generics, vector<Node*> args) : Node(N_CALL) {
+CallNode::CallNode(Node* toCall, std::vector<TypeNode*> generics, std::vector<Node*> args) : Node(N_CALL) {
   this->toCall = toCall;
   this->args = args;
   this->generics = std::move(generics);
@@ -19,8 +19,8 @@ CallNode::CallNode(Node* toCall, vector<TypeNode*> generics, vector<Node*> args)
   }
 }
 
-string CallNode::toString() const {
-  string str = toCall->toString();
+std::string CallNode::toString() const {
+  std::string str = toCall->toString();
   str += "(";
   for (int i = 0; i < args.size(); i++) {
     str += args[i]->toString();

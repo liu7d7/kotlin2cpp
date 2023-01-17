@@ -14,12 +14,12 @@ class VarAssignNode : public Node {
 public:
   Token* idTok;
   Node* value;
-  vector<Token*> members;
+  std::vector<Token*> members;
   bool constant = false;
 
-  VarAssignNode(Token* idTok, Node* value, vector<Token*> members = {});
+  VarAssignNode(Token* idTok, Node* value, std::vector<Token*> members = {});
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_VARASSIGNNODE_H

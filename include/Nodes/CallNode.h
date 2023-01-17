@@ -13,12 +13,12 @@
 class CallNode : public Node {
 public:
   Node* toCall;
-  vector<Node*> args;
-  vector<TypeNode*> generics;
+  std::vector<Node*> args;
+  std::vector<TypeNode*> generics;
 
-  CallNode(Node* toCall, vector<TypeNode*> generics, vector<Node*> args);
+  CallNode(Node* toCall, std::vector<TypeNode*> generics, std::vector<Node*> args);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_CALLNODE_H

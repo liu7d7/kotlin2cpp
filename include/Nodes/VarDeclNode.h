@@ -16,12 +16,12 @@ public:
   Token* idTok;
   TypeNode* typeNode;
   Node* value;
-  vector<Token*> members;
+  std::vector<Token*> members;
   bool constant = false;
 
-  VarDeclNode(Token* idTok, TypeNode* type, Node* value, vector<Token*> members = {});
+  VarDeclNode(Token* idTok, TypeNode* type, Node* value, std::vector<Token*> members = {});
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_VARDECLNODE_H

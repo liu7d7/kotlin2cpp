@@ -17,7 +17,7 @@ ArgNode::ArgNode(Token* idTok, TypeNode* type, Node* value) : Node(N_ARG) {
   }
 }
 
-string ArgNode::toString() const {
+std::string ArgNode::toString() const {
   return idTok->toString() + ": " + typeNode->toString();
 }
 

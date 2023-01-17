@@ -13,13 +13,13 @@
 class VarAccessNode : public Node {
 public:
   Token* idTok;
-  vector<Token*> members;
+  std::vector<Token*> members;
   Node* parent;
   Token* methodName;
 
-  explicit VarAccessNode(Token* idTok, vector<Token*> members = {}, Node* parent = nullptr);
+  explicit VarAccessNode(Token* idTok, std::vector<Token*> members = {}, Node* parent = nullptr);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_VARACCESSNODE_H

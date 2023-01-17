@@ -12,11 +12,11 @@
 class TypeNode : public Node {
 public:
   Token* idTok;
-  vector<TypeNode*> generics;
+  std::vector<TypeNode*> generics;
 
-  explicit TypeNode(Token* typeTok, vector<TypeNode*> generics);
+  explicit TypeNode(Token* typeTok, std::vector<TypeNode*> generics);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_TYPENODE_H

@@ -9,6 +9,6 @@ ContinueNode::ContinueNode(Position* posStart, Position* posEnd) : Node(N_CONTIN
   this->posEnd = posEnd;
 }
 
-string ContinueNode::toString() const {
+std::string ContinueNode::toString() const {
   return "continue";
 }

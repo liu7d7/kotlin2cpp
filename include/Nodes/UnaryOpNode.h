@@ -15,7 +15,7 @@ public:
 
   UnaryOpNode(Token* opTok, Node* node);
 
-  string toString() const override;
+  std::string toString() const override;
 };
 
 #endif //KT2CPP_UNARYOPNODE_H

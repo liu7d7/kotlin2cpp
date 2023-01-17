@@ -14,7 +14,7 @@ public:
 
   IndexNode(Node* item, Node* idx, Node* newVal = nullptr);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_INDEXNODE_H

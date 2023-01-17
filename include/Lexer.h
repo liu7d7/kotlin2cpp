@@ -11,14 +11,12 @@
 #include <Token.h>
 #include <Error.h>
 
-using namespace std;
-
 class Lexer {
 private:
-  string* txt;
+  std::string* txt;
   char currentChar;
   Position* pos;
-  unordered_map<string, TokenType> keywords = {
+  std::unordered_map<std::string, TokenType> keywords = {
     {"class",     CLASS},
     {"data",      DATA},
     {"in",        IN},
@@ -45,7 +43,7 @@ private:
     {"typealias", TYPEALIAS}
   };
 
-  unordered_map<char, char> escapeChars = {
+  std::unordered_map<char, char> escapeChars = {
     {'n',  '\n'},
     {'t',  '\t'},
     {'r',  '\r'},
@@ -60,15 +58,16 @@ private:
 public:
   Error* error = nullptr;
 
-  Lexer(string* text, string* fileName);
+  Lexer(std::string* text, std::string* fileName);
 
-  vector<Token*> tokenize();
+  std::vector<Token*> tokenize();
 
   void advance();
   void skipComment();
 
   Token* makeNumber();
-  Token* makeString();
+  std::vector<Token*> makeString();
+  std::vector<Token*> parseInterpolatedString();
   Token* makeIdentifier();
   Token* makeLessThan();
   Token* makeGreaterThan();
@@ -83,7 +82,6 @@ public:
   Token* makeAnd();
   Token* makeDot();
   Token* makeNot();
-  Token* parseInterpolatedString(const string& in);
 };
 
 #endif //KT2CPP_LEXER_H

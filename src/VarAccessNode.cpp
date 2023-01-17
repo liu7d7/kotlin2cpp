@@ -4,7 +4,7 @@
 
 #include <Nodes/VarAccessNode.h>
 
-VarAccessNode::VarAccessNode(Token* idTok, vector<Token*> members, Node* parent) : Node(N_VAR_ACCESS) {
+VarAccessNode::VarAccessNode(Token* idTok, std::vector<Token*> members, Node* parent) : Node(N_VAR_ACCESS) {
   this->idTok = idTok;
   this->members = members;
   this->parent = parent;
@@ -30,8 +30,8 @@ VarAccessNode::VarAccessNode(Token* idTok, vector<Token*> members, Node* parent)
   }
 }
 
-string VarAccessNode::toString() const {
-  string str;
+std::string VarAccessNode::toString() const {
+  std::string str;
   if (parent != nullptr) {
     str += parent->toString();
   }

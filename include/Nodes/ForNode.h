@@ -17,7 +17,7 @@ public:
 
   ForNode(ArgNode* var, Node* iterable, Node* body);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_FORNODE_H

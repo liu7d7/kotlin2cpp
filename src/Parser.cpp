@@ -10,10 +10,11 @@
 #include "Nodes/DataclassNode.h"
 #include "Nodes/TypealiasNode.h"
 #include "Nodes/LambdaNode.h"
+#include "Nodes/InterpolatedStringNode.h"
 
-const string INVALID_SYNTAX = "InvalidSyntaxError";
+const std::string INVALID_SYNTAX = "InvalidSyntaxError";
 
-Parser::Parser(vector<Token*> tokens) {
+Parser::Parser(std::vector<Token*> tokens) {
   this->tokens = std::move(tokens);
   this->currentToken = nullptr;
   tokIdx = -1;
@@ -57,7 +58,7 @@ ParseResult* Parser::parse() {
 
 ParseResult* Parser::statements() {
   auto res = new ParseResult();
-  vector<Node*> statements;
+  std::vector<Node*> statements;
   auto posStart = currentToken->posStart->copy();
 
   while (currentToken->type == NEWLINE) {
@@ -151,6 +152,10 @@ ParseResult* Parser::atom() {
     res->regAdvancement();
     advance();
     n = new StringNode(tok);
+  } else if (tok->type == IS_BEGIN) {
+    auto is = res->reg(interpolatedStringExpr());
+    if (res->error) return res;
+    n = is;
   } else if (tok->type == LPAREN) {
     res->regAdvancement();
     advance();
@@ -339,7 +344,7 @@ ParseResult* Parser::expr() {
     res->regAdvancement();
     advance();
 
-    vector<Token*> memberNames;
+    std::vector<Token*> memberNames;
     if (currentToken->type != IDENTIFIER) {
       return res->failure(new Error(currentToken, INVALID_SYNTAX,
                                     "Expected identifier"));
@@ -402,7 +407,7 @@ ParseResult* Parser::importExpr() {
 
 ParseResult* Parser::ifExpr() {
   auto res = new ParseResult();
-  vector<pair<Node*, Node*>> cases;
+  std::vector<std::pair<Node*, Node*>> cases;
   Node* elseCase = nullptr;
 
   if (currentToken->type != IF) {
@@ -442,7 +447,7 @@ ParseResult* Parser::ifExpr() {
       res->regAdvancement();
       advance();
 
-      cases.emplace_back(make_pair(cond, body));
+      cases.emplace_back(cond, body);
     } else {
       return res->failure(new Error(currentToken, INVALID_SYNTAX,
                                     "Expected '}'"));
@@ -532,7 +537,7 @@ ParseResult* Parser::funcDef() {
   advance();
 
   Token* idTok = nullptr;
-  vector<Token*> generics;
+  std::vector<Token*> generics;
   if (currentToken->type == LESS_THAN) { // handle generics
     delete currentToken;
     res->regAdvancement();
@@ -576,7 +581,7 @@ ParseResult* Parser::funcDef() {
   res->regAdvancement();
   advance();
 
-  vector<ArgNode*> args;
+  std::vector<ArgNode*> args;
   if (currentToken->type == RPAREN) goto ArgsEnd;
   if (currentToken->type != IDENTIFIER) {
     return res->failure(new Error(currentToken, INVALID_SYNTAX, "Expected identifier"));
@@ -658,7 +663,7 @@ ParseResult* Parser::packageDef() {
     return res->failure(new Error(currentToken, INVALID_SYNTAX, "Expected identifier"));
   }
 
-  vector<Token*> idToks;
+  std::vector<Token*> idToks;
   while (currentToken->type == IDENTIFIER) {
     Token* idTok = currentToken;
     res->regAdvancement();
@@ -699,7 +704,7 @@ ParseResult* Parser::classDef() {
   res->regAdvancement();
   advance();
 
-  vector<Token*> generics;
+  std::vector<Token*> generics;
   if (currentToken->type == LESS_THAN) {
     delete currentToken;
     res->regAdvancement();
@@ -733,7 +738,7 @@ ParseResult* Parser::classDef() {
 
   // TODO: inheritance
 
-  vector<ArgNode*> ctor;
+  std::vector<ArgNode*> ctor;
   if (currentToken->type == LPAREN) { // constructor
     delete currentToken;
     res->regAdvancement();
@@ -808,7 +813,7 @@ ParseResult* Parser::checkIndex(Node* n, ParseResult* res) {
       res->regAdvancement();
       advance();
 
-      if (currentToken->type == COLON) {
+      if (currentToken->type == ASSIGN) {
         delete currentToken;
         res->regAdvancement();
         advance();
@@ -827,7 +832,7 @@ ParseResult* Parser::checkIndex(Node* n, ParseResult* res) {
   return res->success(n);
 }
 
-ParseResult* Parser::binOp(unordered_set<TokenType> ops, ParseResult* (Parser::*funcA)(), ParseResult* (Parser::*funcB)()) {
+ParseResult* Parser::binOp(std::unordered_set<TokenType> ops, ParseResult* (Parser::*funcA)(), ParseResult* (Parser::*funcB)()) {
   auto res = new ParseResult();
   auto left = res->reg((this->*funcA)());
   if (res->error) return res;
@@ -866,7 +871,7 @@ ParseResult* Parser::dataclassDef() {
   res->regAdvancement();
   advance();
 
-  vector<Token*> generics;
+  std::vector<Token*> generics;
   if (currentToken->type == LESS_THAN) {
     delete currentToken;
     res->regAdvancement();
@@ -911,7 +916,7 @@ ParseResult* Parser::dataclassDef() {
   res->regAdvancement();
   advance();
 
-  vector<ArgNode*> args;
+  std::vector<ArgNode*> args;
   while (currentToken->type == IDENTIFIER) {
     auto* arg = (ArgNode*)res->reg(argExpr(true, false));
     args.push_back(arg);
@@ -998,7 +1003,6 @@ ParseResult* Parser::doWhileExpr() {
     body = res->reg(statements());
     if (res->error) return res;
 
-    cout << TokenType_toString(currentToken->type) << endl;
     if (currentToken->type != RCURLYBRACE) {
       return res->failure(new Error(currentToken, INVALID_SYNTAX, "Expected '}'"));
     }
@@ -1048,7 +1052,7 @@ ParseResult* Parser::typeExpr() {
   res->regAdvancement();
   advance();
 
-  vector<TypeNode*> generics;
+  std::vector<TypeNode*> generics;
   if (currentToken->type == LESS_THAN) {
     delete currentToken;
     res->regAdvancement();
@@ -1215,7 +1219,7 @@ ParseResult* Parser::lambdaExpr() {
   res->regAdvancement();
   advance();
 
-  vector<ArgNode*> argToks;
+  std::vector<ArgNode*> argToks;
   bool hasArgs = false;
   {
     if (currentToken->type == LPAREN) {
@@ -1292,7 +1296,7 @@ ParseResult* Parser::idExpr() {
     res->regAdvancement();
     advance();
 
-    vector<Token*> memberNames;
+    std::vector<Token*> memberNames;
     if (currentToken->type != IDENTIFIER) {
       return res->failure(new Error(currentToken, INVALID_SYNTAX,
                                     "Expected identifier"));
@@ -1338,7 +1342,7 @@ ParseResult* Parser::suppliedCall(Node* ato) {
     res->regAdvancement();
     advance();
 
-    vector<Token*> memberNames;
+    std::vector<Token*> memberNames;
     if (currentToken->type != IDENTIFIER) {
       return res->failure(new Error(currentToken, INVALID_SYNTAX,
                                     "Expected identifier"));
@@ -1363,7 +1367,7 @@ ParseResult* Parser::suppliedCall(Node* ato) {
 
     ato = new VarAccessNode(nullptr, memberNames, ato);
   }
-  vector<TypeNode*> generics;
+  std::vector<TypeNode*> generics;
   if (currentToken->type == LESS_THAN) {
     delete currentToken;
     res->regAdvancement();
@@ -1392,7 +1396,7 @@ ParseResult* Parser::suppliedCall(Node* ato) {
     advance();
   }
   bool isFunc = false;
-  vector<Node*> args;
+  std::vector<Node*> args;
   if (currentToken->type == LCURLYBRACE) { // just a lambda, etc .also { ... }
     isFunc = true;
     auto lambda = (LambdaNode*)res->reg(lambdaExpr());
@@ -1452,4 +1456,49 @@ ParseResult* Parser::suppliedCall(Node* ato) {
   }
 
   return res;
+}
+
+ParseResult* Parser::interpolatedStringExpr() {
+  auto res = new ParseResult;
+  if (currentToken->type != IS_BEGIN) {
+    return res->failure(new Error(currentToken, INVALID_SYNTAX, "INTERNAL: Expected 'IS_BEGIN'"));
+  }
+  delete currentToken;
+  res->regAdvancement();
+  advance();
+
+  std::vector<Node*> parts;
+  while (currentToken->type != IS_END) {
+    switch (currentToken->type) {
+      case STRING:
+        parts.emplace_back(new StringNode(currentToken));
+        res->regAdvancement();
+        advance();
+        break;
+      case IS_EXPR_BEGIN:
+        delete currentToken;
+        res->regAdvancement();
+        advance();
+
+        parts.emplace_back(res->reg(statement()));
+        if (res->error) return res;
+
+        if (currentToken->type != IS_EXPR_END) {
+          return res->failure(new Error(currentToken, INVALID_SYNTAX, "INTERNAL: Expected 'IS_EXPR_END'"));
+        }
+        delete currentToken;
+        res->regAdvancement();
+        advance();
+        break;
+      default:
+        return res->failure(new Error(currentToken, INVALID_SYNTAX,
+                                      "INTERNAL: Expected 'IS_END', 'std::string', 'IS_BEGIN', or 'IDENTIFIER'"));
+    }
+  }
+
+  delete currentToken;
+  res->regAdvancement();
+  advance();
+
+  return res->success(new InterpolatedStringNode(parts));
 }

@@ -3,7 +3,7 @@
 //
 #include "Nodes/VarDeclNode.h"
 
-VarDeclNode::VarDeclNode(Token* idTok, TypeNode* type, Node* value, vector<Token*> members) : Node(N_VAR_DECL) {
+VarDeclNode::VarDeclNode(Token* idTok, TypeNode* type, Node* value, std::vector<Token*> members) : Node(N_VAR_DECL) {
   this->idTok = idTok;
   this->typeNode = type;
   this->value = value;
@@ -17,7 +17,7 @@ VarDeclNode::VarDeclNode(Token* idTok, TypeNode* type, Node* value, vector<Token
   }
 }
 
-string VarDeclNode::toString() const {
+std::string VarDeclNode::toString() const {
   return idTok->toString() + " = " + value->toString();
 }
 

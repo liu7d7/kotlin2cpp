@@ -15,7 +15,7 @@ public:
 
   NumberNode(Token* token);
 
-  string toString() const override;
+  std::string toString() const override;
 };
 
 #endif //KT2CPP_NUMBERNODE_H

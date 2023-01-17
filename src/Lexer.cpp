@@ -5,7 +5,7 @@
 #include <Lexer.h>
 #include <iostream>
 
-Lexer::Lexer(string* text, string* fileName) {
+Lexer::Lexer(std::string* text, std::string* fileName) {
   this->txt = text;
   currentChar = '\0';
   pos = new Position(-1, 0, -1, fileName, text);
@@ -13,7 +13,7 @@ Lexer::Lexer(string* text, string* fileName) {
 }
 
 Token* Lexer::makeNumber() {
-  string num;
+  std::string num;
   auto start = pos->copy();
   bool isDecimal = false;
   bool reverse = false;
@@ -42,21 +42,35 @@ Token* Lexer::makeNumber() {
   return new Token(NUMBER, num, start, pos->copy());
 }
 
-Token* Lexer::makeString() {
-  string str;
+std::vector<Token*> Lexer::makeString() {
+  std::string str;
   auto start = pos->copy();
+  advance();
+  char prevChar = '\0';
   bool escape = false;
-
+  bool isInterpolated = false;
   while (currentChar != '\0' && (escape || currentChar != '"')) {
+    if (currentChar == '\\') escape = prevChar != '\\';
+    else escape = false;
+    if ((isalpha(currentChar) || currentChar == '_' || currentChar == '{') && prevChar == '$') { // this string is an interpolated string, needs special treatment
+      isInterpolated = true;
+      break;
+    }
     str += currentChar;
+    prevChar = currentChar;
     advance();
   }
+  if (isInterpolated) {
+    pos = start;
+    advance();
+    return parseInterpolatedString();
+  }
   advance();
-  return new Token(STRING, str, start, pos->copy());
+  return {new Token(STRING, str, start, pos->copy())};
 }
 
 Token* Lexer::makeIdentifier() {
-  string id;
+  std::string id;
   auto start = pos->copy();
   while (isalpha(currentChar) || isdigit(currentChar) || currentChar == '_' || currentChar == '`') {
     id += currentChar;
@@ -113,7 +127,7 @@ Token* Lexer::makeArrow() {
     advance();
     return new Token(MINUS_EQ, "-=", start, pos->copy());
   }
-  return new Token(MINUS, "", start, pos->copy());
+  return new Token(MINUS, "-", start, pos->copy());
 }
 
 Token* Lexer::makeDivide() {
@@ -216,8 +230,8 @@ Token* Lexer::makeDot() {
   return new Token(DOT, ".", start, pos->copy());
 }
 
-vector<Token*> Lexer::tokenize() {
-  vector<Token*> tokens;
+std::vector<Token*> Lexer::tokenize() {
+  std::vector<Token*> tokens;
   while (currentChar != '\0') {
     if (currentChar == ' ' || currentChar == '\t') {
       advance();
@@ -277,12 +291,12 @@ vector<Token*> Lexer::tokenize() {
     } else if (isdigit(currentChar)) {
       tokens.emplace_back(makeNumber());
     } else if (currentChar == '"') {
-      advance();
-      tokens.emplace_back(makeString());
+      std::vector<Token*> thing = makeString();
+      tokens.insert(tokens.cend(), thing.begin(), thing.end());
     } else if (isalpha(currentChar) || currentChar == '_' || currentChar == '`') {
       tokens.emplace_back(makeIdentifier());
     } else {
-      error = new Error(pos, pos, "Unexpected character", to_string(currentChar));
+      error = new Error(pos, pos, "Unexpected character", std::to_string(currentChar));
       return {};
     }
   }
@@ -305,21 +319,76 @@ void Lexer::skipComment() {
   }
 }
 
-Token* Lexer::parseInterpolatedString(const string& in) {
+std::vector<Token*> Lexer::parseInterpolatedString() {
   auto start = pos->copy();
-  string out;
-  for (int i = 0; i < in.length(); i++) {
-    if (in[i] == '$' && in[i + 1] == '{') {
-      i += 2;
-      string expr;
-      while (in[i] != '}') {
-        expr += in[i];
-        i++;
+  std::vector<Token*> toks;
+  toks.push_back(new Token(IS_BEGIN, "\"", start, pos->copy()));
+  std::stringstream contents;
+  bool escape = false;
+  char prevChar = '\0';
+  while (currentChar != '\0' && currentChar != '"') {
+    if (currentChar == '\\') escape = prevChar != '\\';
+    else escape = false;
+    if (currentChar == '$') {
+      advance();
+      if (isalpha(currentChar) || currentChar == '_') {
+        toks.push_back(new Token(STRING, contents.str(), start, pos->copy()));
+        contents.str("");
+        toks.push_back(new Token(IS_EXPR_BEGIN, "$", pos->copy(), pos->copy()));
+        toks.push_back(makeIdentifier());
+        toks.push_back(new Token(IS_EXPR_END, "", pos->copy(), pos->copy()));
+      } else if (currentChar == '{') {
+        int curlyBraceCount = 1;
+        toks.push_back(new Token(STRING, contents.str(), start, pos->copy()));
+        contents.str("");
+        advance();
+        auto exprStart = pos->copy();
+        std::stringstream toLex;
+        while (currentChar != '\0' && curlyBraceCount > 0) {
+          if (currentChar == '{') {
+            curlyBraceCount++;
+          } else if (currentChar == '}') {
+            curlyBraceCount--;
+          }
+          if (curlyBraceCount == 0) {
+            advance();
+            break;
+          }
+          toLex << currentChar;
+          advance();
+        }
+        std::vector<Token*> lexed = Lexer(new std::string(toLex.str()), pos->fName).tokenize();
+        if (lexed.empty()) {
+          error = Lexer(new std::string(toLex.str()), pos->fName).error;
+          return {};
+        }
+        lexed.pop_back();
+        if (!lexed.empty()) {
+          toks.push_back(new Token(IS_EXPR_BEGIN, "${", exprStart, pos->copy()));
+          toks.insert(toks.cend(), lexed.begin(), lexed.end());
+          toks.push_back(new Token(IS_EXPR_END, "}", pos->copy(), pos->copy()));
+        }
+      } else {
+        contents << '$' << currentChar;
+        advance();
       }
-      out += "${" + expr + "}";
     } else {
-      out += in[i];
+      contents << currentChar;
+      advance();
+      prevChar = currentChar;
     }
   }
-  return new Token(STRING, out, start, pos->copy());
+  toks.push_back(new Token(STRING, contents.str(), start, pos->copy()));
+  advance();
+  toks.push_back(new Token(IS_END, "\"", start, pos->copy()));
+  // remove all empty text tokens
+  auto it = toks.begin();
+  while (it != toks.cend()) {
+    if ((*it)->type == STRING && (*it)->value.empty()) {
+      it = toks.erase(it);
+    } else {
+      it++;
+    }
+  }
+  return toks;
 }

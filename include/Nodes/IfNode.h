@@ -10,12 +10,12 @@
 
 class IfNode : public Node {
 public:
-  vector<pair<Node*, Node*>> cases;
+  std::vector<std::pair<Node*, Node*>> cases;
   Node* elseCase;
 
-  IfNode(vector<pair<Node*, Node*>> cases, Node* elseCase);
+  IfNode(std::vector<std::pair<Node*, Node*>> cases, Node* elseCase);
 
-  string toString() const override;
+  std::string toString() const override;
 };
 
 #endif //KT2CPP_IFNODE_H

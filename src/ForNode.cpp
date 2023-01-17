@@ -13,6 +13,6 @@ ForNode::ForNode(ArgNode* varName, Node* iterable, Node* body) : Node(N_FOR) {
   this->posEnd = this->body->posEnd;
 }
 
-string ForNode::toString() const {
+std::string ForNode::toString() const {
   return "for " + var->toString() + " in " + iterable->toString() + " " + body->toString();
 }

@@ -10,6 +10,6 @@ ReturnNode::ReturnNode(Node* returnValue, Position* posStart, Position* posEnd) 
   this->posEnd = posEnd;
 }
 
-string ReturnNode::toString() const {
+std::string ReturnNode::toString() const {
   return "return " + returnNode->toString();
 }

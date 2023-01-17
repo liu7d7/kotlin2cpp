@@ -10,11 +10,11 @@
 
 class ListNode : public Node {
 public:
-  vector<Node*> nodes;
+  std::vector<Node*> nodes;
 
-  ListNode(vector<Node*> nodes, Position* posStart, Position* posEnd);
+  ListNode(std::vector<Node*> nodes, Position* posStart, Position* posEnd);
 
-  string toString() const override;
+  std::string toString() const override;
 };
 
 #endif //KT2CPP_LISTNODE_H

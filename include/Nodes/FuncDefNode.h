@@ -14,14 +14,14 @@ class FuncDefNode : public Node {
 public:
   Token* idTok;
   TypeNode* returnType;
-  vector<ArgNode*> args;
-  vector<Token*> generics;
+  std::vector<ArgNode*> args;
+  std::vector<Token*> generics;
   Node* body;
   bool autoReturn;
 
-  FuncDefNode(Token* nameTok, TypeNode* returnType, vector<Token*> generics, vector<ArgNode*> args, Node* body, bool autoReturn);
+  FuncDefNode(Token* nameTok, TypeNode* returnType, std::vector<Token*> generics, std::vector<ArgNode*> args, Node* body, bool autoReturn);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_FUNCDEFNODE_H

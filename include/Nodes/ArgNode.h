@@ -19,7 +19,7 @@ public:
   ArgNode();
   ArgNode(Token* idTok, TypeNode* typeTok, Node* value);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_ARGNODE_H

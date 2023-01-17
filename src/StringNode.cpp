@@ -10,6 +10,6 @@ StringNode::StringNode(Token* token) : Node(N_STRING) {
   this->posEnd = token->posEnd;
 }
 
-string StringNode::toString() const {
+std::string StringNode::toString() const {
   return token->value;
 }

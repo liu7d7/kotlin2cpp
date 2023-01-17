@@ -5,15 +5,15 @@
 
 #include "Nodes/TypeNode.h"
 
-TypeNode::TypeNode(Token* typeTok, vector<TypeNode*> generics) : Node(N_TYPE) {
+TypeNode::TypeNode(Token* typeTok, std::vector<TypeNode*> generics) : Node(N_TYPE) {
 this->idTok = typeTok;
   this->generics = std::move(generics);
   this->posStart = typeTok->posStart;
   this->posEnd = this->generics.empty() ? typeTok->posEnd : this->generics.back()->posEnd;
 }
 
-string TypeNode::toString() const {
-  string result = idTok->value;
+std::string TypeNode::toString() const {
+  std::string result = idTok->value;
   if (!generics.empty()) {
     result += "<";
     for (auto& generic : generics) {

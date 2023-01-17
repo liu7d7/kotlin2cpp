@@ -13,6 +13,6 @@ BinaryOpNode::BinaryOpNode(Token* opTok, Node* left, Node* right) : Node(N_BIN_O
   this->posEnd = right->posEnd;
 }
 
-string BinaryOpNode::toString() const {
+std::string BinaryOpNode::toString() const {
   return "(" + left->toString() + " " + opTok->value + " " + right->toString() + ")";
 }

@@ -12,7 +12,7 @@ class BreakNode : public Node {
 public:
   BreakNode(Position* posStart, Position* posEnd);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_BREAKNODE_H

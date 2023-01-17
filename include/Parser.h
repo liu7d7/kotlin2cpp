@@ -32,11 +32,11 @@
 
 class Parser {
 public:
-  vector<Token*> tokens;
+  std::vector<Token*> tokens;
   Token* currentToken;
   int tokIdx = -1;
 
-  Parser(vector<Token*> tokens);
+  Parser(std::vector<Token*> tokens);
 
   Token* advance();
   Token* advanceNewLines();
@@ -47,7 +47,7 @@ public:
   ParseResult* statements();
   ParseResult* statement();
   ParseResult* expr();
-  ParseResult* binOp(unordered_set<TokenType> ops, ParseResult* (Parser::*funcA)(), ParseResult* (Parser::*funcB)());
+  ParseResult* binOp(std::unordered_set<TokenType> ops, ParseResult* (Parser::*funcA)(), ParseResult* (Parser::*funcB)());
   ParseResult* assignExpr();
   ParseResult* compExpr();
   ParseResult* arithExpr();
@@ -71,6 +71,7 @@ public:
   ParseResult* classDef();
   ParseResult* dataclassDef();
   ParseResult* importExpr();
+  ParseResult* interpolatedStringExpr(); // one expr
   ParseResult* typeExpr();
   ParseResult* checkIndex(Node* n, ParseResult* res);
 };

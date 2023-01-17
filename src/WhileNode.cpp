@@ -12,6 +12,6 @@ WhileNode::WhileNode(Node* condition, Node* body, bool doWhile) : Node(doWhile ?
   posEnd = body->posEnd;
 }
 
-string WhileNode::toString() const {
+std::string WhileNode::toString() const {
   return "while " + condition->toString() + " " + body->toString();
 }

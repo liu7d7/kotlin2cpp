@@ -7,16 +7,18 @@
 #include "Transpiler.h"
 #include "clipboardxx.hpp"
 #include "Nodes/LambdaNode.h"
+#include "Nodes/TypealiasNode.h"
+#include "Nodes/InterpolatedStringNode.h"
 
-[[nodiscard]] inline string getTabs(int nesting) {
-    return string(nesting * 2, ' ');
+[[nodiscard]] inline std::string getTabs(int nesting) {
+    return std::string(nesting * 2, ' ');
 }
 
 void print(Node* in, int nesting = 0) {
   std::cout << getTabs(nesting) << NodeType_toString(in->type) << ": ";
   switch (in->type) {
     case N_LIST:
-      cout << endl;
+      std::cout << std::endl;
       for (auto& i : ((ListNode*) in)->nodes) {
         print(i, nesting + 1);
       }
@@ -43,7 +45,7 @@ void print(Node* in, int nesting = 0) {
     case N_VAR_ACCESS:
       if (((VarAccessNode*) in)->idTok)
         std::cout << ((VarAccessNode*) in)->idTok->value << std::endl;
-      else cout << endl;
+      else std::cout << std::endl;
       break;
     case N_FUNC_DEF:
       std::cout << ((FuncDefNode*) in)->idTok->value << " ";
@@ -140,55 +142,84 @@ void print(Node* in, int nesting = 0) {
       print(((ForNode*) in)->iterable, nesting + 1);
       print(((ForNode*) in)->body, nesting + 1);
       break;
+    case N_BREAK:
+      std::cout << std::endl;
+      break;
+    case N_CONTINUE:
+      std::cout << std::endl;
+      break;
+    case N_IDX:
+      std::cout << std::endl;
+      print(((IndexNode*) in)->item, nesting + 1);
+      print(((IndexNode*) in)->idx, nesting + 1);
+      if (((IndexNode*) in)->newVal != nullptr) {
+        print(((IndexNode*) in)->newVal, nesting + 1);
+      }
+      break;
+    case N_IMPORT:
+      break;
+    case N_MAP:
+      break;
+    case N_TYPEALIAS:
+      std::cout << std::endl;
+      print(((TypealiasNode*) in)->from, nesting + 1);
+      print(((TypealiasNode*) in)->to, nesting + 1);
+      break;
+    case N_INTERPOLATED_STRING:
+      std::cout << std::endl;
+      for (auto& i : ((InterpolatedStringNode*) in)->items) {
+        print(i, nesting + 1);
+      }
+      break;
   }
 }
 
 int main(int argc, char** argv) {
-  const string fileName = "test.kt";
+  const std::string fileName = "test.kt";
   // Get the file contents as a string
 
-  ifstream file(fileName);
-  stringstream buffer;
+  std::ifstream file(fileName);
+  std::stringstream buffer;
   buffer << file.rdbuf();
-  string fileContents = buffer.str();
+  std::string fileContents = buffer.str();
 
-  Lexer lexer(new string(fileContents), new string(fileName));
+  Lexer lexer(new std::string(fileContents), new std::string(fileName));
   auto tokens = lexer.tokenize();
   if (lexer.error != nullptr) {
-    cout << lexer.error->toString() << endl;
+    std::cout << lexer.error->toString() << std::endl;
     return 1;
   }
-  cout << "Begin lexer output:" << endl;
+  std::cout << "Begin lexer output:" << std::endl;
   for (auto it : tokens) {
-    cout << it->toString() << endl;
+    std::cout << it->toString() << std::endl;
   }
-  cout << "End lexer output" << endl;
-  cout << endl;
+  std::cout << "End lexer output" << std::endl;
+  std::cout << std::endl;
 
   auto ast = Parser(tokens).parse();
   if (ast->error) {
-    cout << ast->error->toString() << endl;
+    std::cout << ast->error->toString() << std::endl;
     return 1;
   }
-  cout << "Begin AST output:" << endl;
+  std::cout << "Begin AST output:" << std::endl;
   print(ast->node);
-  cout << "End AST output" << endl;
-  cout << endl;
+  std::cout << "End AST output" << std::endl;
+  std::cout << std::endl;
 
   auto res = Transpiler(ast).transpile();
-  cout << "Begin transpiled output:" << endl;
-  cout << res;
-  cout << "End transpiled output" << endl;
+  std::cout << "Begin transpiled output:" << std::endl;
+  std::cout << res;
+  std::cout << "End transpiled output" << std::endl;
 
   // save to file
   srand(time(NULL));
-  string fName = "out" + to_string(rand()) + ".cpp";
-  ofstream out(fName);
+  std::string fName = "out" + std::to_string(rand()) + ".cpp";
+  std::ofstream out(fName);
   out << res;
   out.close();
-  cout << "Saved to " << fName << endl;
+  std::cout << "Saved to " << fName << std::endl;
   clipboardxx::clipboard c;
   c << res;
-  cout << "And copied to clipboard" << endl;
+  std::cout << "And copied to clipboard" << std::endl;
   return 0;
 }

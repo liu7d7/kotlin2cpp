@@ -4,7 +4,7 @@
 
 #include <Error.h>
 
-Error::Error(Position* posStart, Position* posEnd, string name, string message) {
+Error::Error(Position* posStart, Position* posEnd, std::string name, std::string message) {
   this->posStart = posStart->copy();
   this->posEnd = posEnd->copy();
   this->posEnd->advance();
@@ -24,18 +24,18 @@ static std::vector<std::string> splitString(const std::string& str) {
   return tokens;
 }
 
-string Error::toString() {
-  string s = name + ": " + message + "\n";
-  s += "File: " + *posStart->fName + ":" + to_string(posStart->line + 1) + ":" + to_string(posStart->col + 1) + "\n";
+std::string Error::toString() {
+  std::string s = name + ": " + message + "\n";
+  s += "File: " + *posStart->fName + ":" + std::to_string(posStart->line + 1) + ":" + std::to_string(posStart->col + 1) + "\n";
   s += "\n\n" + addArrows(*posStart->fText);
   return s;
 }
 
-string Error::addArrows(const string& text) const {
+std::string Error::addArrows(const std::string& text) const {
   // Add '^' under the string s from the start index to the end index
 
-  vector<string> splits = splitString(text);
-  stringstream ss;
+  std::vector<std::string> splits = splitString(text);
+  std::stringstream ss;
   for (int i = 0; i < posStart->col; i++) {
     ss << ' ';
   }
@@ -44,14 +44,14 @@ string Error::addArrows(const string& text) const {
   }
   int line = posStart->line;
   splits.insert(splits.begin() + line + 1, ss.str());
-  stringstream final;
+  std::stringstream final;
   for (int i = line; i <= posEnd->line + 1; i++) {
     final << splits[i] << '\n';
   }
   return final.str();
 }
 
-Error::Error(Token* tok, string name, string message) {
+Error::Error(Token* tok, std::string name, std::string message) {
   this->posStart = tok->posStart->copy();
   this->posEnd = tok->posEnd->copy();
   this->posEnd->advance();

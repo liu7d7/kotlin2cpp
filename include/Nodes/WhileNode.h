@@ -14,7 +14,7 @@ public:
 
   WhileNode(Node* condition, Node* body, bool doWhile);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_WHILENODE_H

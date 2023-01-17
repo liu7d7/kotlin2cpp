@@ -21,69 +21,10 @@
 #include "Nodes/IndexNode.h"
 #include "Nodes/TypealiasNode.h"
 #include "Nodes/LambdaNode.h"
+#include "Nodes/InterpolatedStringNode.h"
 #include <unordered_set>
 #include <iostream>
 #include <fstream>
-
-const unordered_set<NodeType> NO_SEMICOLONS{
-  N_IF, N_WHILE, N_FOR, N_FUNC_DEF, N_PACKAGE
-};
-
-const unordered_set<NodeType> DOUBLE_NEWLINE{
-  N_FUNC_DEF, N_PACKAGE, N_CLASS, N_DATACLASS, N_IF, N_WHILE, N_FOR, N_DO_WHILE, N_TYPEALIAS
-};
-
-struct TranslatedIdentifier {
-  string name;
-  TranslateLevel level;
-  bool needsImport = false;
-};
-
-struct KtUtil {
-  string contents;
-  unordered_set<string> imports{};
-};
-
-const unordered_map<string, TranslatedIdentifier> ID_TRANSLATE{
-  {"HashMap",     {"unordered_map",         TL_IDENTIFIERS, true}},
-  {"HashSet",     {"unordered_set",         TL_IDENTIFIERS, true}},
-  {"ArrayList",   {"vector",                TL_IDENTIFIERS, true}},
-  {"MutableList", {"vector",                TL_IDENTIFIERS, true}},
-  {"LinkedList",  {"list",                  TL_IDENTIFIERS, true}},
-  {"Pair",        {"utility",               TL_IDENTIFIERS, true}},
-  {"String",      {"string",                TL_IDENTIFIERS, true}},
-  {"System",      {"__kt__::System",        TL_KT_UTIL}},
-  {"Scanner",     {"__kt__::Scanner",       TL_KT_UTIL}},
-  {"println",     {"__kt__::println",       TL_KT_UTIL}},
-  {"print",       {"__kt__::print",         TL_KT_UTIL}},
-  {"also",        {"__kt__::also",          TL_KT_UTIL}},
-  {"add",         {"__kt__::container_add", TL_KT_UTIL}},
-  {"Int",         {"int",                   TL_NONE}},
-  {"Double",      {"double",                TL_NONE}},
-  {"Float",       {"float",                 TL_NONE}},
-  {"Bool",        {"bool",                  TL_NONE}},
-  {"Char",        {"char",                  TL_NONE}},
-  {"Byte",        {"byte",                  TL_NONE}},
-  {"Short",       {"short",                 TL_NONE}},
-  {"Long",        {"long",                  TL_NONE}},
-  {"Unit",        {"void",                  TL_NONE}},
-  {"Byte",        {"char",                  TL_NONE}},
-  {"UInt",        {"unsigned int",          TL_NONE}},
-  {"ULong",       {"unsigned long",         TL_NONE}},
-  {"UShort",      {"unsigned short",        TL_NONE}},
-  {"UByte",       {"unsigned char",         TL_NONE}},
-  {"UChar",       {"unsigned char",         TL_NONE}},
-  {"size",        {"size()",                TL_NONE}}, // .size to .size()
-};
-
-const unordered_map<string, KtUtil> KT_UTILS {
-  {"Scanner", {"kt_adapter/scanner.cpp", {"iostream", "string"}}},
-  {"println", {"kt_adapter/println.cpp", {"iostream"}}},
-  {"print", {"kt_adapter/print.cpp", {"iostream"}}},
-  {"add", {"kt_adapter/container_add.cpp", {"vector", "unordered_set"}}},
-  {"also", {"kt_adapter/obj_also.cpp"}},
-  {"also", {"kt_adapter/obj_let.cpp"}},
-};
 
 std::string replaceAll(std::string str, const std::string& from, const std::string& to) {
   size_t start_pos = 0;
@@ -102,21 +43,20 @@ void replaceAllInPlace(std::string& str, const std::string& from, const std::str
   }
 }
 
-string Transpiler::translateId(const string& in) {
+std::string Transpiler::translateId(const std::string& in) {
   if (ID_TRANSLATE.find(in) != ID_TRANSLATE.end()) {
     TranslatedIdentifier t = ID_TRANSLATE.at(in);
     if (t.level > translationLevel.top()) return replaceAll(in, "`", "");
     if (t.needsImport) imports.insert(t.name);
     if (t.level == TL_KT_UTIL && KT_UTILS.find(in) != KT_UTILS.end()) {
       ktUtils.insert(in);
-      imports.insert(KT_UTILS.at(in).imports.begin(), KT_UTILS.at(in).imports.end());
     }
     return (t.needsImport ? "std::" : "") + t.name;
   }
   return replaceAll(in, "`", "");
 }
 
-string getCallNodeMethodName(CallNode* in) {
+std::string getCallNodeMethodName(CallNode* in) {
   if (in->toCall->type == N_VAR_ACCESS) {
     auto* van = (VarAccessNode*) in->toCall;
     return van->methodName->value;
@@ -124,23 +64,23 @@ string getCallNodeMethodName(CallNode* in) {
   return "Can't handle";
 }
 
-const unordered_set<string> TOP_LEVEL_MANGLE {
-  "println", "print", "Scanner"
+const std::unordered_set<std::string> TOP_LEVEL_MANGLE{
+  "println", "print", "Scanner", "Array", "sort", "sortBy"
 };
 
-const unordered_set<string> MEMBER_MANGLE {
-  "add", "also"
+const std::unordered_set<std::string> MEMBER_MANGLE{
+  "add", "also", "let", "map", "toString"
 };
 
 bool shouldMangleCallNode(CallNode* in) {
   if (in->toCall->type != N_VAR_ACCESS) return false;
-  string name = getCallNodeMethodName(in);
+  std::string name = getCallNodeMethodName(in);
   if (TOP_LEVEL_MANGLE.find(name) != TOP_LEVEL_MANGLE.end()) return true;
   if (((VarAccessNode*) in->toCall)->members.empty()) return false;
   return MEMBER_MANGLE.find(name) != MEMBER_MANGLE.end();
 }
 
-const unordered_set<string> VAR_ACCESS_MANGLE {
+const std::unordered_set<std::string> VAR_ACCESS_MANGLE{
   "System"
 };
 
@@ -163,21 +103,22 @@ CallNode* mangleCallNode(CallNode* in) {
       return in;
     }
     if (van->idTok) { // !van->members.empty() && van->parent == nullptr, mangles from idTok.member1.member2(foo) to member2(idTok.member1, foo) or CallNode(van.methodName, in.generics, {van.idTok, van.members[0..van.members.size() - 1]})
-      auto newArgs = vector<Node*>();
-      auto membersMinusLast = vector<Token*>(van->members.begin(), van->members.end() - 1);
+      auto newArgs = std::vector<Node*>();
+      auto membersMinusLast = std::vector<Token*>(van->members.begin(), van->members.end() - 1);
       newArgs.push_back(new VarAccessNode(van->idTok, membersMinusLast));
       newArgs.insert(newArgs.end(), in->args.begin(), in->args.end());
       return new CallNode(new VarAccessNode(van->methodName), in->generics, newArgs);
     }
     if (van->parent) {
-      auto newArgs = vector<Node*>();
-      auto membersMinusLast = vector<Token*>(van->members.begin(), van->members.end() - 1);
+      auto newArgs = std::vector<Node*>();
+      auto membersMinusLast = std::vector<Token*>(van->members.begin(), van->members.end() - 1);
       newArgs.push_back(new VarAccessNode(nullptr, membersMinusLast, van->parent));
       newArgs.insert(newArgs.end(), in->args.begin(), in->args.end());
       return new CallNode(new VarAccessNode(van->methodName), in->generics, newArgs);
     }
   }
-  throw runtime_error("Can't mangle call node");
+  std::cout << "Can't mangle " << NodeType_toString(in->toCall->type) << std::endl;
+  exit(1);
 }
 
 Transpiler::Transpiler(ParseResult* ast) : ast(ast) {
@@ -185,49 +126,21 @@ Transpiler::Transpiler(ParseResult* ast) : ast(ast) {
   typeAbove.push(N_LIST);
 }
 
-string Transpiler::transpile() {
+std::string Transpiler::transpile() {
   recurse(ast->node, out);
 
-  stringstream importsOut;
+  std::string mini = buildKtUtils(ktUtils);
+  replaceAllInPlace(mini, "\n", "");
+  replaceAllInPlace(mini, "\r", "");
+  replaceAllInPlace(mini, "  ", "");
+
+  std::stringstream importsOut;
   for (const auto& i : imports) {
     importsOut << "#include <" << i << ">" << '\n';
   }
   importsOut << '\n';
 
-  string mini = buildKtUtils();
-  replaceAllInPlace(mini, "\n", "");
-  replaceAllInPlace(mini, "\r", "");
-  replaceAllInPlace(mini, "+ ", "+");
-  replaceAllInPlace(mini, " +", "+");
-  replaceAllInPlace(mini, " -", "-");
-  replaceAllInPlace(mini, "- ", "-");
-  replaceAllInPlace(mini, "* ", "*");
-  replaceAllInPlace(mini, " *", "*");
-  replaceAllInPlace(mini, "/ ", "/");
-  replaceAllInPlace(mini, " /", "/");
-  replaceAllInPlace(mini, " =", "=");
-  replaceAllInPlace(mini, "= ", "=");
-  replaceAllInPlace(mini, " ,", ",");
-  replaceAllInPlace(mini, ", ", ",");
-  replaceAllInPlace(mini, "  ", "");
-  replaceAllInPlace(mini, " &", "&");
-  replaceAllInPlace(mini, "& ", "&");
-  replaceAllInPlace(mini, " *", "*");
-  replaceAllInPlace(mini, "* ", "*");
-  replaceAllInPlace(mini, " {", "{");
-  replaceAllInPlace(mini, "{ ", "{");
-  replaceAllInPlace(mini, "} ", "}");
-  replaceAllInPlace(mini, " }", "}");
-  replaceAllInPlace(mini, " (", "(");
-  replaceAllInPlace(mini, "( ", "(");
-  replaceAllInPlace(mini, ") ", ")");
-  replaceAllInPlace(mini, " )", ")");
-  replaceAllInPlace(mini, "< ", "<");
-  replaceAllInPlace(mini, " <", "<");
-  replaceAllInPlace(mini, " >", ">");
-  replaceAllInPlace(mini, "> ", ">");
-
-  stringstream real;
+  std::stringstream real;
   real << importsOut.str();
   real << "// kotlin support\n";
   real << mini;
@@ -246,7 +159,8 @@ struct LoopSpecification {
 
 LoopSpecification toLoopSpecification(Node* in) {
   if (in->type != N_BIN_OP) {
-    throw runtime_error("Expected binary operation");
+    std::cout << "Can't convert " << NodeType_toString(in->type) << " to LoopSpecification" << std::endl;
+    exit(1);
   }
   auto* binOp = (BinaryOpNode*) in;
   LoopSpecification spec;
@@ -276,17 +190,21 @@ LoopSpecification toLoopSpecification(Node* in) {
       spec.down = true;
       break;
     default:
-      throw runtime_error("Expected range, until, or downto, got " + binOp->opTok->toString());
+      std::cout << "Expected range, until, or downTo, got " << binOp->opTok->toString() << std::endl;
+      exit(1);
   }
   return spec;
 }
 
-void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
+void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
   NodeType above = typeAbove.top();
   if (in->type != N_VAR_ACCESS)
     typeAbove.push(in->type);
-  stringstream out;
-  string tabs = string(nesting * 2, ' ');
+  std::stringstream out;
+  std::string tabs = std::string(nesting * 2, ' ');
+  if (above == N_RETURN || above == N_VAR_ASSIGN || above == N_VAR_DECL) {
+    tabs = "";
+  }
   switch (in->type) {
     case N_LIST: {
       auto list = (ListNode*) in;
@@ -397,6 +315,7 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
     }
     case N_DATACLASS: {
       auto dataClass = (DataclassNode*) in;
+      imports.insert("string");
       if (!dataClass->generics.empty()) {
         out << tabs << "template<";
         for (int i = 0; i < dataClass->generics.size(); i++) {
@@ -412,6 +331,8 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
         out << ';' << '\n';
       }
       out << '\n';
+      // default constructer (no args)
+      out << tabs << "  " << dataClass->idTok->value << "() {}\n";
       out << tabs << "  " << dataClass->idTok->value << '(';
       for (int i = 0; i < dataClass->ctor.size(); i++) {
         recurse(dataClass->ctor[i], out, nesting + 1);
@@ -423,6 +344,13 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
         if (i != dataClass->ctor.size() - 1) out << ", ";
       }
       out << " {}" << '\n';
+      out << tabs << "  " << "[[nodiscard]] std::string toString() {\n";
+      out << tabs << "    " << "return (std::string(\"" << dataClass->idTok->value << "(\")";
+      for (auto& i : dataClass->ctor) {
+        out << " + \"" << i->idTok->value << "=\" + __kt__::toString(" << i->idTok->value << ")";
+      }
+      out << " + \")\");\n";
+      out << tabs << "  " << "}" << '\n';
       out << tabs << "}";
       break;
     }
@@ -437,7 +365,7 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
       out << ' ' << varDecl->idTok->value;
       if (varDecl->value) {
         out << " = ";
-        recurse(varDecl->value, out, varDecl->value->type == N_LAMBDA ? nesting : 0);
+        recurse(varDecl->value, out, nesting);
       }
       break;
     }
@@ -520,7 +448,7 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
       if (!call->generics.empty()) {
         out << "<";
         for (int i = 0; i < call->generics.size(); i++) {
-          recurse(call->generics[i], out, 0);
+          recurse(call->generics[i], out, nesting);
           if (i != call->generics.size() - 1) out << ", ";
         }
         out << ">";
@@ -546,7 +474,7 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
     case N_RETURN: {
       auto ret = (ReturnNode*) in;
       out << tabs << "return ";
-      recurse(ret->returnNode, out, 0);
+      recurse(ret->returnNode, out, nesting);
       break;
     }
     case N_VAR_ASSIGN: {
@@ -565,7 +493,7 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
         }
       }
       out << " = ";
-      recurse(varAssign->value, out, 0);
+      recurse(varAssign->value, out, nesting);
       break;
     }
     case N_IF: {
@@ -599,7 +527,7 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
         recurse(spec.start, out, 0);
         out << "; ";
         out << loop->var->idTok->value;
-        string op = spec.inclusive ? (spec.down ? ">=" : "<=") : (spec.down ? ">" : "<");
+        std::string op = spec.inclusive ? (spec.down ? ">=" : "<=") : (spec.down ? ">" : "<");
         out << ' ' << op << ' ';
         recurse(spec.end, out, 0);
         out << "; ";
@@ -643,6 +571,8 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
       break;
     case N_IDX: {
       auto idx = (IndexNode*) in;
+      if (above != N_CALL)
+        out << tabs;
       recurse(idx->item, out, 0);
       out << '[';
       recurse(idx->idx, out, 0);
@@ -657,28 +587,36 @@ void Transpiler::recurse(Node* in, stringstream& output, int nesting) {
       out << tabs << "import;\n";
       break;
     }
+    case N_INTERPOLATED_STRING: {
+      imports.insert("string");
+      auto str = (InterpolatedStringNode*) in;
+      if (str->items.empty()) out << "\"\"";
+      else {
+        out << "(";
+        bool first = true;
+        for (auto it : str->items) {
+          if (!first)
+            out << " + ";
+          bool needsToString = it->type != N_STRING;
+          if (needsToString) {
+            ktUtils.insert("toString");
+            out << "__kt__::toString(";
+          } else if (first) {
+            out << "std::string(";
+          }
+          recurse(it, out, nesting + 1);
+          if (needsToString || first) {
+            out << ")";
+          }
+          first = false;
+        }
+        out << ")";
+      }
+    }
     case N_MAP:
       break;
   }
   if (in->type != N_VAR_ACCESS)
     typeAbove.pop();
   output << out.str();
-}
-
-string readFile(const string& path) {
-  ifstream file(path);
-  stringstream buffer;
-  buffer << file.rdbuf();
-  return buffer.str();
-}
-
-string Transpiler::buildKtUtils() {
-  stringstream output;
-  output << "namespace __kt__ {\n";
-  for (const string& s : ktUtils) {
-    output << readFile(KT_UTILS.at(s).contents) << endl;
-  }
-  output << '\n';
-  output << "}";
-  return output.str();
 }

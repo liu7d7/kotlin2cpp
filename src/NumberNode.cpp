@@ -11,6 +11,6 @@ NumberNode::NumberNode(Token* token) : Node(NodeType::N_NUMBER) {
   posEnd = token->posEnd;
 }
 
-string NumberNode::toString() const {
+std::string NumberNode::toString() const {
   return token->toString();
 }

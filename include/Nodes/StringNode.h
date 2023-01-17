@@ -14,7 +14,7 @@ public:
 
   StringNode(Token* token);
 
-  string toString() const override;
+  std::string toString() const override;
 };
 
 #endif //KT2CPP_STRINGNODE_H

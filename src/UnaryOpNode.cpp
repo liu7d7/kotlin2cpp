@@ -11,6 +11,6 @@ UnaryOpNode::UnaryOpNode(Token* opTok, Node* node) : Node(N_UN_OP) {
   this->posEnd = node->posEnd;
 }
 
-string UnaryOpNode::toString() const {
+std::string UnaryOpNode::toString() const {
   return "(" + opTok->toString() + node->toString() + ")";
 }

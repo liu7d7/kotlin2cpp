@@ -14,14 +14,14 @@
 class Error {
 public:
   Position* posStart, * posEnd;
-  string name, message;
+  std::string name, message;
 
-  Error(Position* posStart, Position* posEnd, string name, string message);
-  Error(Token* tok, string name, string message);
+  Error(Position* posStart, Position* posEnd, std::string name, std::string message);
+  Error(Token* tok, std::string name, std::string message);
 
-  [[nodiscard]] virtual string toString();
+  [[nodiscard]] virtual std::string toString();
 
-  [[nodiscard]] string addArrows(const string& text) const;
+  [[nodiscard]] std::string addArrows(const std::string& text) const;
 };
 
 #endif //KT2CPP_ERROR_H

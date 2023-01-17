@@ -34,10 +34,11 @@ enum NodeType {
   N_TYPE,
   N_DO_WHILE,
   N_TYPEALIAS,
-  N_LAMBDA
+  N_LAMBDA,
+  N_INTERPOLATED_STRING
 };
 
-[[nodiscard]] string NodeType_toString(NodeType in);
+[[nodiscard]] std::string NodeType_toString(NodeType in);
 
 class Node {
 public:
@@ -46,7 +47,7 @@ public:
 
   Node(NodeType type);
 
-  virtual string toString() const = 0;
+  virtual std::string toString() const = 0;
 };
 
 #endif //KT2CPP_NODE_H

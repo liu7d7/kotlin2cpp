@@ -9,6 +9,6 @@ BreakNode::BreakNode(Position* posStart, Position* posEnd) : Node(N_BREAK) {
   this->posEnd = posEnd;
 }
 
-string BreakNode::toString() const {
+std::string BreakNode::toString() const {
   return "break";
 }

@@ -4,7 +4,7 @@
 
 #include <Nodes/IfNode.h>
 
-IfNode::IfNode(vector<pair<Node*, Node*>> cases, Node* elseCase) : Node(N_IF) {
+IfNode::IfNode(std::vector<std::pair<Node*, Node*>> cases, Node* elseCase) : Node(N_IF) {
   this->cases = cases;
   this->elseCase = elseCase;
 
@@ -16,8 +16,8 @@ IfNode::IfNode(vector<pair<Node*, Node*>> cases, Node* elseCase) : Node(N_IF) {
   }
 }
 
-string IfNode::toString() const {
-  string casesStr = "";
+std::string IfNode::toString() const {
+  std::string casesStr = "";
   for (auto& p : this->cases) {
     casesStr += "case " + p.first->toString() + ": " + p.second->toString() + "\n";
   }

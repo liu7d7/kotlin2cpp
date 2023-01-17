@@ -13,14 +13,14 @@
 class ClassNode : public Node {
 public:
   Token* idTok;
-  vector<ArgNode*> ctor;
-  vector<Token*> generics;
+  std::vector<ArgNode*> ctor;
+  std::vector<Token*> generics;
   Node* body;
   Node* super;
 
-  ClassNode(Token* type, vector<Token*> generics, vector<ArgNode*> ctor, Node* body, Node* super = nullptr);
+  ClassNode(Token* type, std::vector<Token*> generics, std::vector<ArgNode*> ctor, Node* body, Node* super = nullptr);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_CLASSNODE_H

@@ -13,6 +13,6 @@ IndexNode::IndexNode(Node* item, Node* idx, Node* newVal) : Node(N_IDX) {
   this->posEnd = newVal ? newVal->posEnd : idx->posEnd;
 }
 
-string IndexNode::toString() const {
+std::string IndexNode::toString() const {
   return "(" + item->toString() + " [" + idx->toString() + "] " + (newVal ? newVal->toString() : "") + ")";
 }

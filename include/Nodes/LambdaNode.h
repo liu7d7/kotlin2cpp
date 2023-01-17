@@ -13,11 +13,11 @@
 class LambdaNode : public Node {
 public:
   Node* body;
-  vector<ArgNode*> args;
+  std::vector<ArgNode*> args;
 
-  LambdaNode(Node* body, vector<ArgNode*> args);
+  LambdaNode(Node* body, std::vector<ArgNode*> args);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_LAMBDANODE_H

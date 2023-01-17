@@ -5,11 +5,11 @@
 
 #include "Nodes/LambdaNode.h"
 
-string LambdaNode::toString() const {
+std::string LambdaNode::toString() const {
   return "";
 }
 
-LambdaNode::LambdaNode(Node* body, vector<ArgNode*> args) : Node(N_LAMBDA), body(body), args(std::move(args)) {
+LambdaNode::LambdaNode(Node* body, std::vector<ArgNode*> args) : Node(N_LAMBDA), body(body), args(std::move(args)) {
   this->posStart = this->args.empty() ? body->posStart : this->args.front()->posStart;
   this->posEnd = body->posEnd;
 }

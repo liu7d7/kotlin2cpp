@@ -13,12 +13,12 @@
 class DataclassNode : public Node {
 public:
   Token* idTok;
-  vector<ArgNode*> ctor;
-  vector<Token*> generics;
+  std::vector<ArgNode*> ctor;
+  std::vector<Token*> generics;
 
-  DataclassNode(Token* idTok, vector<Token*> generics, vector<ArgNode*> args);
+  DataclassNode(Token* idTok, std::vector<Token*> generics, std::vector<ArgNode*> args);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_DATACLASSNODE_H

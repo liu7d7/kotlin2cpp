@@ -15,7 +15,7 @@ public:
 
   BinaryOpNode(Token* opTok, Node* left, Node* right);
 
-  [[nodiscard]] string toString() const override;
+  [[nodiscard]] std::string toString() const override;
 };
 
 #endif //KT2CPP_BINARYOPNODE_H

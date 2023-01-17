@@ -6,15 +6,15 @@
 
 #include <utility>
 
-ListNode::ListNode(vector<Node*> nodes, Position* posStart, Position* posEnd) : Node(N_LIST) {
+ListNode::ListNode(std::vector<Node*> nodes, Position* posStart, Position* posEnd) : Node(N_LIST) {
   this->nodes = std::move(nodes);
 
   this->posStart = posStart;
   this->posEnd = posEnd;
 }
 
-string ListNode::toString() const {
-  string str = "[";
+std::string ListNode::toString() const {
+  std::string str = "[";
   for (int i = 0; i < nodes.size(); i++) {
     str += nodes[i]->toString();
     if (i != nodes.size() - 1) {

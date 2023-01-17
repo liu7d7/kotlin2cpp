@@ -17,7 +17,7 @@ public:
 
   ImportNode(Node* path);
 
-  string toString() const override;
+  std::string toString() const override;
 };
 
 #endif //KT2CPP_IMPORTNODE_H

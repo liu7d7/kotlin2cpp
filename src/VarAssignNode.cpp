@@ -4,7 +4,7 @@
 
 #include <Nodes/VarAssignNode.h>
 
-VarAssignNode::VarAssignNode(Token* idTok, Node* value, vector<Token*> members) : Node(N_VAR_ASSIGN) {
+VarAssignNode::VarAssignNode(Token* idTok, Node* value, std::vector<Token*> members) : Node(N_VAR_ASSIGN) {
   this->idTok = idTok;
   this->value = value;
   this->members = members;
@@ -17,6 +17,6 @@ VarAssignNode::VarAssignNode(Token* idTok, Node* value, vector<Token*> members) 
   }
 }
 
-string VarAssignNode::toString() const {
+std::string VarAssignNode::toString() const {
   return idTok->toString() + " = " + value->toString();
 }

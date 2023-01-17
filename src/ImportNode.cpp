@@ -17,6 +17,6 @@ ImportNode::ImportNode(Node* path) : Node(N_IMPORT) {
   this->posEnd = path->posEnd;
 }
 
-string ImportNode::toString() const {
+std::string ImportNode::toString() const {
   return "ImportNode: " + pkg->toString();
 }
