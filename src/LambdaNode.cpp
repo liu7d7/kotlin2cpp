@@ -13,4 +13,3 @@ LambdaNode::LambdaNode(Node* body, std::vector<ArgNode*> args) : Node(N_LAMBDA),
   this->posStart = this->args.empty() ? body->posStart : this->args.front()->posStart;
   this->posEnd = body->posEnd;
 }
-

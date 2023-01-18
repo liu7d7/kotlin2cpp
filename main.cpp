@@ -60,7 +60,8 @@ void print(Node* in, int nesting = 0) {
       break;
     case N_VAR_DECL:
       std::cout << ((VarDeclNode*) in)->idTok->value << std::endl;
-      print(((VarDeclNode*) in)->value, nesting + 1);
+      if (((VarDeclNode*) in)->value)
+        print(((VarDeclNode*) in)->value, nesting + 1);
       break;
     case N_ARG:
       std::cout << ((ArgNode*) in)->idTok->value << ": " << (((ArgNode*) in)->typeNode ? ((ArgNode*) in)->typeNode->toString() : "Any") << std::endl;

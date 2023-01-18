@@ -64,14 +64,6 @@ std::string getCallNodeMethodName(CallNode* in) {
   return "Can't handle";
 }
 
-const std::unordered_set<std::string> TOP_LEVEL_MANGLE{
-  "println", "print", "Scanner", "Array", "sort", "sortBy"
-};
-
-const std::unordered_set<std::string> MEMBER_MANGLE{
-  "add", "also", "let", "map", "toString"
-};
-
 bool shouldMangleCallNode(CallNode* in) {
   if (in->toCall->type != N_VAR_ACCESS) return false;
   std::string name = getCallNodeMethodName(in);
@@ -79,10 +71,6 @@ bool shouldMangleCallNode(CallNode* in) {
   if (((VarAccessNode*) in->toCall)->members.empty()) return false;
   return MEMBER_MANGLE.find(name) != MEMBER_MANGLE.end();
 }
-
-const std::unordered_set<std::string> VAR_ACCESS_MANGLE{
-  "System"
-};
 
 bool shouldMangleVarAccessToken(Token* in) {
   return VAR_ACCESS_MANGLE.find(in->value) != VAR_ACCESS_MANGLE.end();
@@ -413,6 +401,7 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
       recurse(whileNode->condition, out, 0);
       out << ") {\n";
       recurse(whileNode->body, out, nesting + 1);
+      if (whileNode->body->type != N_LIST) out << ";\n";
       out << tabs << "}";
       break;
     }
@@ -420,6 +409,7 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
       auto whileNode = (WhileNode*) in;
       out << tabs << "do {\n";
       recurse(whileNode->body, out, nesting + 1);
+      if (whileNode->body->type != N_LIST) out << ";\n";
       out << tabs << "} while (";
       recurse(whileNode->condition, out, 0);
       out << ")";
@@ -536,6 +526,9 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
         recurse(spec.step, out, 0);
         out << ")) {\n";
         recurse(loop->body, out, nesting + 1);
+        if (loop->body->type != N_LIST) {
+          out << ";\n";
+        }
         out << tabs << "}";
       } else {
         out << " : ";

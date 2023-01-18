@@ -13,7 +13,7 @@ VarDeclNode::VarDeclNode(Token* idTok, TypeNode* type, Node* value, std::vector<
   if (!members.empty()) {
     this->posEnd = members.back()->posEnd;
   } else {
-    this->posEnd = value->posEnd;
+    this->posEnd = value ? value->posEnd : idTok->posEnd;
   }
 }
 

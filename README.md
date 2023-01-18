@@ -358,7 +358,7 @@ int main() {
   auto l2 = __kt__::map(l1, [&](auto& it) {
     return ThingTwo(it);
   });
-  __kt__::println((std::string("yo!! ") + __kt__::toString(l2) + " asdf " + __kt__::toString(    __kt__::also(l1, [&](auto& it) {
+  __kt__::println((std::string("yo!! ") + __kt__::toString(l2) + " asdf " + __kt__::toString(__kt__::also(l1, [&](auto& it) {
     return __kt__::println(it);
   })) + " man"));
 }

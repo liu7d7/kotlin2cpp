@@ -196,18 +196,19 @@ ParseResult* Parser::atom() {
       advance();
 
       auto typeTok = (TypeNode*)res->reg(typeExpr());
-      if (currentToken->type != ASSIGN) {
-        return res->failure(new Error(currentToken, INVALID_SYNTAX, "Expected '='"));
+      if (currentToken->type == ASSIGN) {
+        // delete useless (from now on) assign token
+        delete currentToken;
+        res->regAdvancement();
+        advance();
+
+        Node* exp = res->reg(expr());
+        if (res->error) return res;
+
+        n = new VarDeclNode(idTok, typeTok, exp);
+      } else {
+        n = new VarDeclNode(idTok, typeTok, nullptr);
       }
-      // delete useless (from now on) assign token
-      delete currentToken;
-      res->regAdvancement();
-      advance();
-
-      Node* exp = res->reg(expr());
-      if (res->error) return res;
-
-      n = new VarDeclNode(idTok, typeTok, exp);
     } else if (currentToken->type == ASSIGN) { // handle w/o type
       // delete useless (from now on) assign token
       delete currentToken;
@@ -219,8 +220,7 @@ ParseResult* Parser::atom() {
 
       n = new VarDeclNode(idTok, nullptr /* no type info available */, exp);
     } else {
-      return res->failure(new Error(currentToken, INVALID_SYNTAX,
-                                    "Expected '=' or ':'"));
+      n = new VarDeclNode(idTok, nullptr /* no type info available */, nullptr);
     }
   } else if (tok->type == IDENTIFIER) {
     Node* exp = res->reg(idExpr());
@@ -978,6 +978,11 @@ ParseResult* Parser::whileExpr() {
     res->regAdvancement();
     advance();
   } else {
+    if (currentToken->type == NEWLINE) {
+      delete currentToken;
+      res->regAdvancement();
+      advance();
+    }
     body = res->reg(statement());
     if (res->error) return res;
   }
@@ -1011,9 +1016,26 @@ ParseResult* Parser::doWhileExpr() {
     advance();
 
   } else {
+    if (currentToken->type == NEWLINE) {
+      delete currentToken;
+      res->regAdvancement();
+      advance();
+    }
+    std::cout << TokenType_toString(currentToken->type) << std::endl;
+
     body = res->reg(statement());
-    if (res->error) return res;
+    if (res->error) {
+      std::cout << TokenType_toString(currentToken->type) << std::endl;
+      return res;
+    }
+    if (currentToken->type == NEWLINE) {
+      delete currentToken;
+      res->regAdvancement();
+      advance();
+    }
   }
+
+  std::cout << TokenType_toString(currentToken->type) << std::endl;
 
   if (currentToken->type != WHILE) {
     return res->failure(new Error(currentToken, INVALID_SYNTAX, "Expected 'while'"));
@@ -1022,6 +1044,8 @@ ParseResult* Parser::doWhileExpr() {
   res->regAdvancement();
   advance();
 
+  std::cout << TokenType_toString(currentToken->type) << std::endl;
+
   if (currentToken->type != LPAREN) {
     return res->failure(new Error(currentToken, INVALID_SYNTAX, "Expected '('"));
   }
@@ -1029,8 +1053,12 @@ ParseResult* Parser::doWhileExpr() {
   res->regAdvancement();
   advance();
 
+  std::cout << TokenType_toString(currentToken->type) << std::endl;
+
   Node* condition = res->reg(expr());
   if (res->error) return res;
+
+  std::cout << TokenType_toString(currentToken->type) << std::endl;
 
   if (currentToken->type != RPAREN) {
     return res->failure(new Error(currentToken, INVALID_SYNTAX, "Expected ')'"));
@@ -1259,9 +1287,10 @@ ParseResult* Parser::lambdaExpr() {
 
   Node* body = res->reg(statements());
   if (res->error) return res;
+  const std::unordered_set<NodeType> EXCLUDE_RET{N_RETURN, N_BREAK, N_CONTINUE, N_FOR, N_WHILE, N_DO_WHILE};
   if (body->type == N_LIST) {
     auto list = (ListNode*)body;
-    if (!list->nodes.empty()) {
+    if (!list->nodes.empty() && EXCLUDE_RET.find(list->nodes.back()->type) == EXCLUDE_RET.end()) {
       list->nodes.back() = new ReturnNode(list->nodes.back(), list->nodes.back()->posStart, list->nodes.back()->posEnd);
     }
   }

@@ -12,6 +12,35 @@ struct Array {
     }
   }
 
+  ~Array() {
+    delete[] data;
+  }
+
+  Array(const Array& other) : Array(other._size, [&](int i) { return other[i]; }) {}
+
+  Array(Array&& other) noexcept : data(std::exchange(other.data, nullptr)), _size(other._size) {}
+
+  Array& operator=(const Array& other) {
+    if (this != &other) {
+      delete[] data;
+      data = new T[other._size];
+      _size = other._size;
+      for (int i = 0; i < _size; i++) {
+        data[i] = other[i];
+      }
+    }
+    return *this;
+  }
+
+  Array& operator=(Array&& other) noexcept {
+    if (this != &other) {
+      delete[] data;
+      data = std::exchange(other.data, nullptr);
+      _size = other._size;
+    }
+    return *this;
+  }
+
   inline int size() {
     return _size;
   }
