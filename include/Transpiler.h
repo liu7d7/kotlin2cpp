@@ -17,7 +17,7 @@ enum TranslateLevel {
 };
 
 const std::unordered_set<NodeType> NO_SEMICOLONS{
-  N_IF, N_WHILE, N_FOR, N_FUNC_DEF, N_PACKAGE
+  N_IF, N_WHILE, N_FOR, N_FUNC_DEF, N_PACKAGE, N_EMPTY
 };
 
 const std::unordered_set<NodeType> DOUBLE_NEWLINE{
@@ -25,7 +25,10 @@ const std::unordered_set<NodeType> DOUBLE_NEWLINE{
 };
 
 struct TranslatedIdentifier {
-  std::string name;
+  struct {
+    std::string name;
+    std::string import;
+  } id;
   TranslateLevel level;
   bool needsImport = false;
 };
@@ -37,43 +40,51 @@ struct KtUtil {
 };
 
 const std::unordered_map<std::string, TranslatedIdentifier> ID_TRANSLATE{
-  {"HashMap",     {"unordered_map",         TL_IDENTIFIERS, true}},
-  {"HashSet",     {"unordered_set",         TL_IDENTIFIERS, true}},
-  {"ArrayList",   {"vector",                TL_IDENTIFIERS, true}},
-  {"MutableList", {"vector",                TL_IDENTIFIERS, true}},
-  {"LinkedList",  {"list",                  TL_IDENTIFIERS, true}},
-  {"Pair",        {"pair",                  TL_IDENTIFIERS, true}},
-  {"String",      {"string",                TL_IDENTIFIERS, true}},
-  {"System",      {"__kt__::System",        TL_KT_UTIL}},
-  {"Scanner",     {"__kt__::Scanner",       TL_KT_UTIL}},
-  {"println",     {"__kt__::println",       TL_KT_UTIL}},
-  {"print",       {"__kt__::print",         TL_KT_UTIL}},
-  {"also",        {"__kt__::also",          TL_KT_UTIL}},
-  {"add",         {"__kt__::container_add", TL_KT_UTIL}},
-  {"let",         {"__kt__::let",           TL_KT_UTIL}},
-  {"map",         {"__kt__::map",           TL_KT_UTIL}},
-  {"toString",    {"__kt__::toString",      TL_KT_UTIL}},
-  {"Array",       {"__kt__::Array_ctor",    TL_KT_UTIL}},
-  {"sort",        {"__kt__::sort",          TL_KT_UTIL}},
-  {"sorted",      {"__kt__::sorted",        TL_KT_UTIL}},
-  {"sortBy",      {"__kt__::sortBy",        TL_KT_UTIL}},
-  {"sortedBy",    {"__kt__::sortedBy",      TL_KT_UTIL}},
-  {"Int",         {"int",                   TL_NONE}},
-  {"Double",      {"double",                TL_NONE}},
-  {"Float",       {"float",                 TL_NONE}},
-  {"Bool",        {"bool",                  TL_NONE}},
-  {"Char",        {"char",                  TL_NONE}},
-  {"Byte",        {"byte",                  TL_NONE}},
-  {"Short",       {"short",                 TL_NONE}},
-  {"Long",        {"long long",             TL_NONE}},
-  {"Unit",        {"void",                  TL_NONE}},
-  {"Byte",        {"char",                  TL_NONE}},
-  {"UInt",        {"unsigned int",          TL_NONE}},
-  {"ULong",       {"unsigned long long",    TL_NONE}},
-  {"UShort",      {"unsigned short",        TL_NONE}},
-  {"UByte",       {"unsigned char",         TL_NONE}},
-  {"UChar",       {"unsigned char",         TL_NONE}},
-  {"size",        {"size()",                TL_NONE}}, // .size to .size()
+  {"HashMap",     {{"unordered_map"},         TL_IDENTIFIERS, true}},
+  {"TreeMap",     {{"map"},                   TL_IDENTIFIERS, true}},
+  {"HashSet",     {{"unordered_set"},         TL_IDENTIFIERS, true}},
+  {"TreeSet",     {{"set"},                   TL_IDENTIFIERS, true}},
+  {"ArrayList",   {{"vector"},                TL_IDENTIFIERS, true}},
+  {"MutableList", {{"vector"},                TL_IDENTIFIERS, true}},
+  {"Queue",       {{"queue"},                 TL_IDENTIFIERS, true}},
+  {"Stack",       {{"stack"},                 TL_IDENTIFIERS, true}},
+  {"LinkedList",  {{"list"},                  TL_IDENTIFIERS, true}},
+  {"Pair",        {{"pair", "utility"},       TL_IDENTIFIERS, true}},
+  {"min",         {{"min", "NO"},       TL_IDENTIFIERS, true}},
+  {"max",         {{"max", "NO"},       TL_IDENTIFIERS, true}},
+  {"String",      {{"string"},                TL_IDENTIFIERS, true}},
+  {"System",      {{"__kt__::System"},        TL_KT_UTIL}},
+  {"Scanner",     {{"__kt__::Scanner"},       TL_KT_UTIL}},
+  {"println",     {{"__kt__::println"},       TL_KT_UTIL}},
+  {"print",       {{"__kt__::print"},         TL_KT_UTIL}},
+  {"also",        {{"__kt__::also"},          TL_KT_UTIL}},
+  {"add",         {{"__kt__::container_add"}, TL_KT_UTIL}},
+  {"let",         {{"__kt__::let"},           TL_KT_UTIL}},
+  {"map",         {{"__kt__::map"},           TL_KT_UTIL}},
+  {"toString",    {{"__kt__::toString"},      TL_KT_UTIL}},
+  {"Array",       {{"__kt__::Array_ctor"},    TL_KT_UTIL}},
+  {"sort",        {{"__kt__::sort"},          TL_KT_UTIL}},
+  {"sorted",      {{"__kt__::sorted"},        TL_KT_UTIL}},
+  {"sortBy",      {{"__kt__::sortBy"},        TL_KT_UTIL}},
+  {"sortedBy",    {{"__kt__::sortedBy"},      TL_KT_UTIL}},
+  {"key",         {{"first"},                 TL_KT_UTIL}},
+  {"value",       {{"value"},                 TL_KT_UTIL}},
+  {"Int",         {{"int"},                   TL_NONE}},
+  {"Double",      {{"double"},                TL_NONE}},
+  {"Float",       {{"float"},                 TL_NONE}},
+  {"Bool",        {{"bool"},                  TL_NONE}},
+  {"Char",        {{"char"},                  TL_NONE}},
+  {"Byte",        {{"byte"},                  TL_NONE}},
+  {"Short",       {{"short"},                 TL_NONE}},
+  {"Long",        {{"long long"},             TL_NONE}},
+  {"Unit",        {{"void"},                  TL_NONE}},
+  {"Byte",        {{"char"},                  TL_NONE}},
+  {"UInt",        {{"unsigned int"},          TL_NONE}},
+  {"ULong",       {{"unsigned long long"},    TL_NONE}},
+  {"UShort",      {{"unsigned short"},        TL_NONE}},
+  {"UByte",       {{"unsigned char"},         TL_NONE}},
+  {"UChar",       {{"unsigned char"},         TL_NONE}},
+  {"size",        {{"size()"},                TL_NONE}}, // .size to .size()
 };
 
 const std::unordered_map<std::string, KtUtil> KT_UTILS{
@@ -93,7 +104,7 @@ const std::unordered_map<std::string, KtUtil> KT_UTILS{
 };
 
 const std::unordered_set<std::string> TOP_LEVEL_MANGLE{
-  "println", "print", "Scanner", "Array", "sort", "sortBy", "sorted", "sortedBy"
+  "println", "print", "Scanner", "Array", "sort", "sortBy", "sorted", "sortedBy", "min", "max"
 };
 
 const std::unordered_set<std::string> MEMBER_MANGLE{
@@ -101,7 +112,11 @@ const std::unordered_set<std::string> MEMBER_MANGLE{
 };
 
 const std::unordered_set<std::string> VAR_ACCESS_MANGLE{
-  "System"
+  "System", "key", "value"
+};
+
+const std::unordered_set<std::string> PRIMITIVE_IDS{
+  "Int", "Double", "Float", "Bool", "Char", "Byte", "Short", "Long", "Unit", "Byte", "UInt", "ULong", "UShort", "UByte", "UChar"
 };
 
 class Transpiler {
@@ -145,6 +160,7 @@ private:
   std::unordered_set<std::string> addedKtUtils;
   std::stack<TranslateLevel> translationLevel;
   std::stack<NodeType> typeAbove;
+  std::stack<bool> inFunction;
 
   std::string readFile(const std::string& path) {
     std::ifstream file(path);

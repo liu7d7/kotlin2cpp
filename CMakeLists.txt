@@ -16,7 +16,7 @@ set(
     src/PackageNode.cpp include/Nodes/ClassNode.h src/ClassNode.cpp include/Nodes/IndexNode.h src/IndexNode.cpp include/Nodes/ImportNode.h src/ImportNode.cpp
         include/Position.h  include/Global.h include/Nodes/VarDeclNode.h src/VarDeclNode.cpp include/Nodes/ArgNode.h src/ArgNode.cpp
     include/Nodes/DataclassNode.h src/DataclassNode.cpp include/Transpiler.h src/Transpiler.cpp include/Nodes/TypeNode.h src/TypeNode.cpp
-        include/Nodes/TypealiasNode.h src/TypealiasNode.cpp include/Nodes/LambdaNode.h src/LambdaNode.cpp include/Nodes/InterpolatedStringNode.h src/InterpolatedStringNode.cpp)
+        include/Nodes/TypealiasNode.h src/TypealiasNode.cpp include/Nodes/LambdaNode.h src/LambdaNode.cpp include/Nodes/InterpolatedStringNode.h src/InterpolatedStringNode.cpp include/Nodes/EmptyNode.h include/Nodes/CharNode.h)
 
 
 include_directories(include)

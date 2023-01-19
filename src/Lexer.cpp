@@ -135,6 +135,7 @@ Token* Lexer::makeDivide() {
   advance();
   if (currentChar == '/') {
     skipComment();
+    return new Token(INVALID, "", start, pos->copy());
   }
   if (currentChar == '=') {
     advance();
@@ -293,6 +294,9 @@ std::vector<Token*> Lexer::tokenize() {
     } else if (currentChar == '"') {
       std::vector<Token*> thing = makeString();
       tokens.insert(tokens.cend(), thing.begin(), thing.end());
+    } else if (currentChar == '\'') {
+      auto thing = makeChar();
+      tokens.push_back(thing);
     } else if (isalpha(currentChar) || currentChar == '_' || currentChar == '`') {
       tokens.emplace_back(makeIdentifier());
     } else {
@@ -301,6 +305,15 @@ std::vector<Token*> Lexer::tokenize() {
     }
   }
   tokens.emplace_back(new Token(END_OF_FILE, "", pos));
+  // remove all INVALID tokens
+  auto it = tokens.begin();
+  while (it != tokens.end()) {
+    if ((*it)->type == INVALID) {
+      it = tokens.erase(it);
+    } else {
+      it++;
+    }
+  }
   return tokens;
 }
 
@@ -391,4 +404,27 @@ std::vector<Token*> Lexer::parseInterpolatedString() {
     }
   }
   return toks;
+}
+
+Token* Lexer::makeChar() {
+  auto start = pos->copy();
+  advance();
+  char c = currentChar;
+  if (currentChar == '\\') {
+    advance();
+    // use escapechars map
+    if (escapeChars.find(currentChar) != escapeChars.end()) {
+      c = escapeChars[currentChar];
+    } else {
+      error = new Error(pos, pos, "Invalid escape character", std::to_string(currentChar));
+      return nullptr;
+    }
+  }
+  advance();
+  if (currentChar != '\'') {
+    error = new Error(pos, pos, "Expected closing single quote", std::to_string(currentChar));
+    return nullptr;
+  }
+  advance();
+  return new Token(T_CHAR, std::string(1, c), start, pos->copy());
 }

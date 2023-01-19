@@ -74,6 +74,8 @@ public:
   ParseResult* interpolatedStringExpr(); // one expr
   ParseResult* typeExpr();
   ParseResult* checkIndex(Node* n, ParseResult* res);
+
+  std::stack<std::string> callStack;
 };
 
 #endif //KT2CPP_PARSER_H

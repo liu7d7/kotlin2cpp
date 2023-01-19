@@ -66,6 +66,7 @@ public:
   void skipComment();
 
   Token* makeNumber();
+  Token* makeChar();
   std::vector<Token*> makeString();
   std::vector<Token*> parseInterpolatedString();
   Token* makeIdentifier();

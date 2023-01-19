@@ -118,8 +118,8 @@ template<typename K, typename V>
 inline std::string toString(std::unordered_map<K, V>& map) {
   std::string s = "{";
   int i = 0;
-  for (auto& [key, value] : map) {
-    s += toString(key) + ": " + toString(value);
+  for (auto& it : map) {
+    s += toString(it.first) + ": " + toString(it.second);
     if (i < map.size() - 1) {
       s += ", ";
     }
@@ -133,8 +133,8 @@ template<typename K, typename V>
 inline std::string toString(std::unordered_map<K, V>&& map) {
   std::string s = "{";
   int i = 0;
-  for (auto& [key, value] : map) {
-    s += toString(key) + ": " + toString(value);
+  for (auto& it : map) {
+    s += toString(it.first) + ": " + toString(it.second);
     if (i < map.size() - 1) {
       s += ", ";
     }

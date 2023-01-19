@@ -36,10 +36,10 @@ std::string VarAccessNode::toString() const {
     str += parent->toString();
   }
   if (idTok != nullptr) {
-    str += idTok->toString();
+    str += idTok->value;
   }
   for (auto& member : members) {
-    str += "." + member->toString();
+    str += "." + member->value;
   }
   return str;
 }

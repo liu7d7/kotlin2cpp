@@ -184,8 +184,10 @@ int main(int argc, char** argv) {
   buffer << file.rdbuf();
   std::string fileContents = buffer.str();
 
+  auto start = currentTimeMillis();
   Lexer lexer(new std::string(fileContents), new std::string(fileName));
   auto tokens = lexer.tokenize();
+  auto end = currentTimeMillis();
   if (lexer.error != nullptr) {
     std::cout << lexer.error->toString() << std::endl;
     return 1;
@@ -194,27 +196,34 @@ int main(int argc, char** argv) {
   for (auto it : tokens) {
     std::cout << it->toString() << std::endl;
   }
-  std::cout << "End lexer output" << std::endl;
+  auto end2 = currentTimeMillis();
+  std::cout << "End lexer output (lexing took " << end - start << "ms, lexing & printing took " << end2 - start << "ms)" << std::endl;
   std::cout << std::endl;
 
+  start = currentTimeMillis();
   auto ast = Parser(tokens).parse();
+  end = currentTimeMillis();
   if (ast->error) {
     std::cout << ast->error->toString() << std::endl;
     return 1;
   }
   std::cout << "Begin AST output:" << std::endl;
   print(ast->node);
-  std::cout << "End AST output" << std::endl;
+  end2 = currentTimeMillis();
+  std::cout << "End AST output (parsing took " << end - start << "ms, parsing & printing took " << end2 - start << "ms)" << std::endl;
   std::cout << std::endl;
 
+  start = currentTimeMillis();
   auto res = Transpiler(ast).transpile();
+  end = currentTimeMillis();
   std::cout << "Begin transpiled output:" << std::endl;
   std::cout << res;
-  std::cout << "End transpiled output" << std::endl;
+  end2 = currentTimeMillis();
+  std::cout << "End transpiled output (transpiling took " << end - start << "ms, transpiling & printing took " << end2 - start << "ms)" << std::endl;
 
   // save to file
   srand(time(NULL));
-  std::string fName = "out" + std::to_string(rand()) + ".cpp";
+  std::string fName = "out/out" + std::to_string(rand()) + ".cpp";
   std::ofstream out(fName);
   out << res;
   out.close();

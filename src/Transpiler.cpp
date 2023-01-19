@@ -22,9 +22,10 @@
 #include "Nodes/TypealiasNode.h"
 #include "Nodes/LambdaNode.h"
 #include "Nodes/InterpolatedStringNode.h"
+#include "Nodes/CharNode.h"
+#include "Nodes/UnaryOpNode.h"
 #include <unordered_set>
 #include <iostream>
-#include <fstream>
 
 std::string replaceAll(std::string str, const std::string& from, const std::string& to) {
   size_t start_pos = 0;
@@ -47,11 +48,11 @@ std::string Transpiler::translateId(const std::string& in) {
   if (ID_TRANSLATE.find(in) != ID_TRANSLATE.end()) {
     TranslatedIdentifier t = ID_TRANSLATE.at(in);
     if (t.level > translationLevel.top()) return replaceAll(in, "`", "");
-    if (t.needsImport) imports.insert(t.name);
+    if (t.needsImport && t.id.import != "NO") imports.insert(t.id.import.empty() ? t.id.name : t.id.import);
     if (t.level == TL_KT_UTIL && KT_UTILS.find(in) != KT_UTILS.end()) {
       ktUtils.insert(in);
     }
-    return (t.needsImport ? "std::" : "") + t.name;
+    return (t.needsImport ? "std::" : "") + t.id.name;
   }
   return replaceAll(in, "`", "");
 }
@@ -74,6 +75,17 @@ bool shouldMangleCallNode(CallNode* in) {
 
 bool shouldMangleVarAccessToken(Token* in) {
   return VAR_ACCESS_MANGLE.find(in->value) != VAR_ACCESS_MANGLE.end();
+}
+
+bool isPrimitive(const std::string& in) {
+  return PRIMITIVE_IDS.find(in) != PRIMITIVE_IDS.end();
+}
+
+bool needsRef(TypeNode* in) {
+  if (!in || !in->idTok) {
+    return true;
+  }
+  return !isPrimitive(in->idTok->value);
 }
 
 /**
@@ -112,6 +124,7 @@ CallNode* mangleCallNode(CallNode* in) {
 Transpiler::Transpiler(ParseResult* ast) : ast(ast) {
   translationLevel.push(TL_IDENTIFIERS);
   typeAbove.push(N_LIST);
+  inFunction.push(false);
 }
 
 std::string Transpiler::transpile() {
@@ -205,7 +218,8 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
         if (DOUBLE_NEWLINE.find(n->type) != DOUBLE_NEWLINE.end() && i != list->nodes.size() - 1) {
           out << '\n';
         }
-        out << '\n';
+        if (n->type != N_EMPTY)
+          out << '\n';
       }
       break;
     }
@@ -254,7 +268,9 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
         if (i != funcDef->args.size() - 1) out << ", ";
       }
       out << ") {" << '\n';
+      inFunction.push(true);
       recurse(funcDef->body, out, nesting + 1);
+      inFunction.pop();
       out << tabs << "}";
       break;
     }
@@ -273,7 +289,7 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
     }
     case N_ARG: {
       auto arg = (ArgNode*) in;
-      bool ref = above == N_FUNC_DEF || above == N_LAMBDA;
+      bool ref = (above == N_FUNC_DEF || above == N_LAMBDA) && needsRef(arg->typeNode);
       if (arg->typeNode) {
         recurse(arg->typeNode, out, nesting);
         if (ref) {
@@ -287,11 +303,19 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
       }
       out << ' ';
       out << arg->idTok->value;
+      if (arg->defaultValue) {
+        out << " = ";
+        recurse(arg->defaultValue, out, nesting);
+      }
       break;
     }
     case N_LAMBDA: {
       auto lambda = (LambdaNode*) in;
-      out << "[&](";
+      if (inFunction.top()) {
+        out << "[&](";
+      } else {
+        out << "[](";
+      }
       for (int i = 0; i < lambda->args.size(); i++) {
         recurse(lambda->args[i], out, nesting);
         if (i != lambda->args.size() - 1) out << ", ";
@@ -554,8 +578,12 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
       recurse(alias->to, out, 0);
       break;
     }
-    case N_UN_OP:
+    case N_UN_OP: {
+      auto unOp = (UnaryOpNode*) in;
+      out << tabs << unOp->opTok->value;
+      recurse(unOp->node, out, 0);
       break;
+    }
     case N_BREAK:
       out << tabs << "break;\n";
       break;
@@ -577,7 +605,7 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
       break;
     }
     case N_IMPORT: {
-      out << tabs << "import;\n";
+      // don't care
       break;
     }
     case N_INTERPOLATED_STRING: {
@@ -607,6 +635,9 @@ void Transpiler::recurse(Node* in, std::stringstream& output, int nesting) {
       }
     }
     case N_MAP:
+      break;
+    case N_CHAR:
+      out << '\'' << ((CharNode*) in)->token->value << '\'';
       break;
   }
   if (in->type != N_VAR_ACCESS)
